@@ -4,72 +4,107 @@
 	<title>My Page</title> 
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
 	<link rel="stylesheet" href="css/jquery.mobile142.css" />
-	<link rel="stylesheet" href="css/jquery.mobile.map.css" />
+	
 	<script src="js/jquery191.js"></script>
+	<script>
+    $(document).bind('mobileinit',function(){
+        $.mobile.pushStateEnabled = false;
+    });
+	</script>
 	<script src="js/jquery.mobile142.js"></script>
-	<script src="js/jquery.mobile-map.js"></script>
-	<script src="js/map.js"></script>
+	<script src="js/db.js"></script>
+	<script>
+	$( document ).on( "pageinit", "#page1", function( event ) {
+			initDatabase();
+	});
+	$( document ).on( "pageinit", "#page4", function( event ) {
+			selectAll();
+	});
+	</script>
 </head> 
 <body> 
 
-<div data-role="page" id="page1" data-url="map-page">
-
-	
-	<div data-role="panel" id="myPanel"> 
-		
-		<div>
-		<ul data-role="listview">
-		  <li><a href="#page1">News Feed</a></li>
-		  <li><a href="#page2">Notify</a></li>
-		</ul>
+<div data-role="page" id="page1" data-theme="e">
+		<div data-role="header">
+			<h1>Vigil App</h1>
+			<div data-role="navbar">
+				<ul>
+					<li><a href="#page1" data-icon="info">News Feed</a></li>
+					<li><a href="#page2" data-icon="info">Notify</a></li>
+					<li><a href="#page3" data-icon="mail">Contact</a></li>
+					<li><a href="#page4" data-icon="user">User Profile</a></li>
+				</ul>
+			</div>
 		</div>
-	</div>
-	
-	<div data-role="header">
-		<a href="#myPanel" data-icon="bars" data-theme="b" >Menu</a>
-		<div align="center"><img src="images/logo.png" width="105" height="40"/></div>
-	</div>
-
-	<div data-role="content">	
-		<p>News Feeds</p>
-
-		
-		
-	</div><!-- /content -->
-	
-	<div data-role="footer">
-       <h1>Page Footer</h1>
-    </div> 	
-</div>
-
-<div data-role="page" id="page2">
-	
-	<div data-role="panel" id="myPanel"> 
-		
-		<div>
-		<ul data-role="listview">
-		  <li><a href="#page1">News Feed</a></li>
-		  <li><a href="#page2">Notify</a></li>
-		</ul>
+		<div data-role="main" class="ui-content">
+			<h1>News Feed page</h1>
 		</div>
+		<div data-role="footer">
+			<h2>&copy; MIM Team 2014</h2>
+		</div>	
 	</div>
 	
-	<div data-role="header">
-		<a href="#myPanel" data-icon="bars" data-theme="b">Menu</a>
-		<div align="center"><img src="images/logo.png" width="105" height="40"/></div>
+	<div data-role="page" id="page2" data-theme="e">
+		<div data-role="header">
+			<h1>Vigil App</h1>
+			<div data-role="navbar">
+				<ul>
+					<li><a href="#page1" data-icon="info">News Feed</a></li>
+					<li><a href="#page2" data-icon="info">Notify</a></li>
+					<li><a href="#page3" data-icon="mail">Contact</a></li>
+					<li><a href="#page4" data-icon="user">User Profile</a></li>
+				</ul>
+			</div>
+		</div>
+		<div data-role="main" class="ui-content">
+			<h1>Notify page</h1>
+		</div>
+		<div data-role="footer">
+			<h2>&copy; MIM Team 2014</h2>
+		</div>	
 	</div>
 
-	<div data-role="content">	
-		<p>Notify Incident</p>
-					
+	<div data-role="page" id="page3" data-theme="e">
+		<div data-role="header">
+			<h1>Vigil App</h1>
+			<div data-role="navbar">
+				<ul>
+					<li><a href="#page1" data-icon="info">News Feed</a></li>
+					<li><a href="#page2" data-icon="info">Notify</a></li>
+					<li><a href="#page3" data-icon="mail">Contact</a></li>
+					<li><a href="#page4" data-icon="user">User Profile</a></li>
+				</ul>
+			</div>
+		</div>
+		<div data-role="main" class="ui-content">
+			<h1>Contact page</h1>
+		</div>
+		<div data-role="footer">
+			<h2>&copy; MIM Team 2014</h2>
+		</div>	
 	</div>
 	
-	<div data-role="footer">
-       <h1>Page Footer</h1>
-    </div> 	
-</div>
-
-
+	<div data-role="page" id="page4" data-theme="e">
+		<div data-role="header">
+			<h1>Vigil App</h1>
+			<div data-role="navbar">
+				<ul>
+					<li><a href="#page1" data-icon="info">News Feed</a></li>
+					<li><a href="#page2" data-icon="info">Notify</a></li>
+					<li><a href="#page3" data-icon="mail">Contact</a></li>
+					<li><a href="#page4" data-icon="user">User Profile</a></li>
+				</ul>
+			</div>
+		</div>
+		<div data-role="main" class="ui-content">
+			<h1>User profile</h1>
+			<div id = "user_n"> </div>
+			
+		</div>
+		<div data-role="footer">
+			<h2>&copy; MIM Team 2014</h2>
+		</div>	
+	</div>
 
 </body>
 </html>
