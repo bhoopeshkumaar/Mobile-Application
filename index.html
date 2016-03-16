@@ -31,6 +31,11 @@
 	$( document ).on( "pageshow", "#page4", function() {
 		selectUser();
 	});
+	
+	$( document ).on( "click", "#notify_btn", function(e) {
+		console.log("Notifying event");
+	});
+	
 	</script>
 </head> 
 <body> 
@@ -42,6 +47,7 @@
 				<ul>
 					<li><a href="#page1" data-icon="info">News Feed</a></li>
 					<li><a href="#map-page" data-icon="location">Notify</a></li>
+					<li><a href="#page2" data-icon="eye">Trends</a></li>
 					<li><a href="#page3" data-icon="mail">Contact</a></li>
 					<li><a href="#page4" data-icon="user">User Profile</a></li>
 					
@@ -50,6 +56,8 @@
 		</div>
 		<div data-role="main" class="ui-content">
 			<h1>News Feed</h1>
+			<div id='newsfeed'></div>
+			
 		</div>
 		<div data-role="footer" data-theme="b" data-position="fixed">
 			<h2>&copy; MIM Team 2014</h2>
@@ -63,6 +71,7 @@
 				<ul>
 					<li><a href="#page1" data-icon="info">News Feed</a></li>
 					<li><a href="#map-page" data-icon="location">Notify</a></li>
+					<li><a href="#page2" data-icon="eye">Trends</a></li>
 					<li><a href="#page3" data-icon="mail">Contact</a></li>
 					<li><a href="#page4" data-icon="user">User Profile</a></li>
 				</ul>
@@ -70,11 +79,54 @@
 		</div>
 		<div role="main" class="ui-content" id="map-canvas" align="center"></div><!--Map loads here-->
 		<div id="currentLocation"></div>
+		<div id="notifyform">
+			<fieldset data-role="controlgroup">
+					<legend>Choose an emergency type:</legend>
+					<input type="radio" name="radio-choice" id="radio-choice-1" value="choice-1"/>
+					<label for="radio-choice-1">Theft</label>
+
+					<input type="radio" name="radio-choice" id="radio-choice-2" value="choice-2"  />
+					<label for="radio-choice-2">Fire</label>
+
+					<input type="radio" name="radio-choice" id="radio-choice-3" value="choice-3"  />
+					<label for="radio-choice-3">Medical</label>
+
+					<input type="radio" name="radio-choice" id="radio-choice-4" value="choice-4"  />
+					<label for="radio-choice-4">Other</label>
+			</fieldset>
+				
+				<label for="textarea-a">Description:</label>
+				<textarea name="textarea" id="textarea-a">
+				</textarea>
+				
+				<input type="button" value="Notify" id="notify_btn">
+		</div>
 		<div data-role="footer" data-theme="b" data-position="fixed">
 			<h2>&copy; MIM Team 2014</h2>
 		</div>
 	</div>
 
+	<div data-role="page" id="page2">
+		<div data-role="header" data-theme="b">
+			<h1>Vigil App</h1>
+			<div data-role="navbar">
+				<ul>
+					<li><a href="#page1" data-icon="info">News Feed</a></li>
+					<li><a href="#map-page" data-icon="location">Notify</a></li>
+					<li><a href="#page2" data-icon="eye">Trends</a></li>
+					<li><a href="#page3" data-icon="mail">Contact</a></li>
+					<li><a href="#page4" data-icon="user">User Profile</a></li>
+				</ul>
+			</div>
+		</div>
+		<div data-role="main" class="ui-content">
+			<h1>Trends</h1>
+		</div>
+		<div data-role="footer" data-theme="b" data-position="fixed">
+			<h2>&copy; MIM Team 2014</h2>
+		</div>	
+	</div>
+	
 	<div data-role="page" id="page3">
 		<div data-role="header" data-theme="b">
 			<h1>Vigil App</h1>
@@ -82,6 +134,7 @@
 				<ul>
 					<li><a href="#page1" data-icon="info">News Feed</a></li>
 					<li><a href="#map-page" data-icon="location">Notify</a></li>
+					<li><a href="#page2" data-icon="eye">Trends</a></li>
 					<li><a href="#page3" data-icon="mail">Contact</a></li>
 					<li><a href="#page4" data-icon="user">User Profile</a></li>
 				</ul>
@@ -102,6 +155,7 @@
 				<ul>
 					<li><a href="#page1" data-icon="info">News Feed</a></li>
 					<li><a href="#map-page" data-icon="location">Notify</a></li>
+					<li><a href="#page2" data-icon="eye">Trends</a></li>
 					<li><a href="#page3" data-icon="mail">Contact</a></li>
 					<li><a href="#page4" data-icon="user">User Profile</a></li>
 				</ul>

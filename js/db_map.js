@@ -217,6 +217,7 @@ function dataUserSelectHandler( transaction, results ) {
 				
 				userName = row['user_name'];
 				
+				
 		        $('#user_n').html('<h4 id="your_name">Your Name is '+ row['user_name'] +'</h4>');
 		        
 		    }		    
@@ -227,17 +228,22 @@ function dataNewsSelectHandler( transaction, results ) {
 			var i=0,
 				row;
 			
-			console.log('Num of rows: ' + results.rows.length);			
+			console.log('Num of rows: ' + results.rows.length);		
+			var newsContent = '';
 		    for (i ; i<results.rows.length; i++) {
-			
+				
+				
+				
 		    	row = results.rows.item(i);
-		        console.log("Emer Type ::" + row['city']);
-				console.log("Emer Type ::" + row['emergencyType']);
-				console.log("Description ::" + row['description']);
-				
-				
-				
-		       // $('#user_n').html('<h4 id="your_name">Your Name is '+ row['user_name'] +'</h4>');
-		        
-		    }		    
+				console.log('Div id : '  + row['city']+row['news_id'] );
+				var divId = row['city']+row['news_id'];
+				var subDesc = row['description'].substring(0,10)+ ' .....';
+				newsContent += "<div id='" + divId + "' data-role='collapsible'><h4>" + row['emergencyType'] + '</h4> ' + subDesc + "<p>" + row['description'] + "</p></div>";
+				  
+		    }	
+			
+			//console.log(newsContent);
+			
+			$('#newsfeed').html(newsContent);
 }		
+
