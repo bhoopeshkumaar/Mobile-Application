@@ -19,6 +19,13 @@
 	<script>
 	$( document ).on( "pageshow", "#map-page", function() {
 		showMap();
+		getUserLocation();
+	});
+	$( document ).on( "pageinit", "#page1", function() {
+		initDatabase();
+	});
+	$( document ).on( "pageshow", "#page1", function() {
+		selectUser();
 	});
 	</script>
 </head> 
@@ -57,9 +64,8 @@
 				</ul>
 			</div>
 		</div>
-		<div role="main" class="ui-content" id="map-canvas" align="center">
-			<!-- map loads here... -->
-		</div>
+		<div role="main" class="ui-content" id="map-canvas" align="center"></div><!--Map loads here-->
+		<div id="currentLocation"></div>
 		<div data-role="footer" data-theme="b" data-position="fixed">
 			<h2>&copy; MIM Team 2014</h2>
 		</div>
@@ -99,31 +105,14 @@
 		</div>
 		<div data-role="main" class="ui-content">
 			<h1>User profile</h1>
+			<div id="user_n"></div>
 		</div>
 		<div data-role="footer" data-theme="b" data-position="fixed">
 			<h2>&copy; MIM Team 2014</h2>
 		</div>	
 	</div>
 	
-	<div data-role="page" id="page5">
-		<div data-role="header" data-theme="b">
-			<h1>Vigil App</h1>
-			<div data-role="navbar">
-				<ul>
-					<li><a href="#page1" data-icon="info">News Feed</a></li>
-					<li><a href="#map-page" data-icon="location">Notify</a></li>
-					<li><a href="#page3" data-icon="mail">Contact</a></li>
-					<li><a href="#page4" data-icon="user">User Profile</a></li>
-				</ul>
-			</div>
-		</div>
-		<div data-role="main" class="ui-content">
-			<h1>Test</h1>
-		</div>
-		<div data-role="footer" data-theme="b" data-position="fixed">
-			<h2>&copy; MIM Team 2014</h2>
-		</div>	
-	</div>
+	
 	
 </body>
 </html>
