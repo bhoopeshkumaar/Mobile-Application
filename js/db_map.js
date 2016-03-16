@@ -1,3 +1,5 @@
+var userCity = '';
+
 function showMap(){
 	console.log('Showing map');
 	var defaultLatLng = new google.maps.LatLng(34.0983425, -118.3267434);  // Default to Hollywood, CA when no geolocation support
@@ -71,7 +73,6 @@ function dropTables() {
 			    function (transaction) {
 			    	transaction.executeSql("DROP TABLE user;", [], nullDataHandler, errorHandler);
 					transaction.executeSql("DROP TABLE news;", [], nullDataHandler, errorHandler);
-					transaction.executeSql("DROP TABLE city;", [], nullDataHandler, errorHandler);
 			    }
 			);
 			console.log("Tables has been dropped.");
@@ -98,8 +99,7 @@ function createTables(){
 	DEMODB.transaction(
         function (transaction) {
         	transaction.executeSql('CREATE TABLE IF NOT EXISTS user(id INTEGER NOT NULL PRIMARY KEY, user_name TEXT NOT NULL);', [], nullDataHandler, errorHandler);
-			transaction.executeSql('CREATE TABLE IF NOT EXISTS news(news_id INTEGER NOT NULL PRIMARY KEY, city_id INTEGER NOT NULL, news TEXT NOT NULL);', [], nullDataHandler, errorHandler);
-			transaction.executeSql('CREATE TABLE IF NOT EXISTS city(city_id INTEGER NOT NULL PRIMARY KEY, city_name INTEGER NOT NULL, lat TEXT NOT NULL, long TEXT NOT NULL);', [], nullDataHandler, errorHandler);
+			transaction.executeSql('CREATE TABLE IF NOT EXISTS news(news_id INTEGER NOT NULL PRIMARY KEY, city INTEGER NOT NULL, emergencyType TEXT NOT NULL, description TEXT NOT NULL );', [], nullDataHandler, errorHandler);
         }
     );
 	
@@ -128,6 +128,8 @@ function getUserLocation(){
 					if(ac.types.indexOf("administrative_area_level_1") >= 0) state = ac.long_name;
 					if(ac.types.indexOf("country") >= 0) country = ac.long_name;
 				}
+				
+				userCity = city;
 				//only report if we got Good Stuff
 				if(city != '' && state != '' && country != '') {
 					$("#currentLocation").html("<h4>Your location is "+city+", "+state+ ", " + country + "!</h4>");
@@ -152,20 +154,57 @@ function populate() {
 			);
 
 			populateNews();
-			populateCity();
 		}
 		
-
+function populateNews(){
+	DEMODB.transaction(
+			    function (transaction) {
+				
+				var data = [
+							['1','Hyattsville', 'Theft', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
+							['2','Hyattsville', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
+							['3','Hyattsville', 'Medical', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
+							['4','Hyattsville', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
+							['5','Dallas', 'Theft', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
+							['6','Dallas', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
+							['7','Dallas', 'Medical', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
+							['8','Dallas', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
+							['9','Chennai', 'Theft', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
+							['10','Frederick', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
+							['11','Frederick', 'Medical', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
+							['12','Frederick', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
+							];  
+				
+					for(var i= 0 ; i < 12; i++){
+							transaction.executeSql("INSERT INTO news(news_id, city, emergencyType, description) VALUES (?, ?, ?, ?)", [data[i][0], data[i][1], data[i][2], data[i][3],], errorHandler);
+						}
+				}
+			);
+}
+		
+		
 function selectUser() {
 	    	
 			DEMODB.transaction(
 			    function (transaction) {
-			        transaction.executeSql("SELECT * FROM user;", [], dataSelectHandler, errorHandler);
+			        transaction.executeSql("SELECT * FROM user;", [], dataUserSelectHandler, errorHandler);
 			    }
 			);			    
 	    }
 		
-function dataSelectHandler( transaction, results ) {
+function selectNews(){
+	
+	console.log("User city : " + userCity);
+	
+	DEMODB.transaction(
+			    function (transaction) {
+			        transaction.executeSql("SELECT * FROM news where city = ?;", [userCity], dataNewsSelectHandler, errorHandler);
+			    }
+			);
+	
+}
+		
+function dataUserSelectHandler( transaction, results ) {
 			// Handle the results
 			var i=0,
 				row;
@@ -178,11 +217,27 @@ function dataSelectHandler( transaction, results ) {
 				
 				userName = row['user_name'];
 				
-				
-		       
 		        $('#user_n').html('<h4 id="your_name">Your Name is '+ row['user_name'] +'</h4>');
 		        
-		        
-		
 		    }		    
 	    }
+		
+function dataNewsSelectHandler( transaction, results ) {
+			// Handle the results
+			var i=0,
+				row;
+			
+			console.log('Num of rows: ' + results.rows.length);			
+		    for (i ; i<results.rows.length; i++) {
+			
+		    	row = results.rows.item(i);
+		        console.log("Emer Type ::" + row['city']);
+				console.log("Emer Type ::" + row['emergencyType']);
+				console.log("Description ::" + row['description']);
+				
+				
+				
+		       // $('#user_n').html('<h4 id="your_name">Your Name is '+ row['user_name'] +'</h4>');
+		        
+		    }		    
+}		

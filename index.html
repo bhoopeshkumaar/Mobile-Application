@@ -23,8 +23,12 @@
 	});
 	$( document ).on( "pageinit", "#page1", function() {
 		initDatabase();
+		getUserLocation();
 	});
 	$( document ).on( "pageshow", "#page1", function() {
+		selectNews();
+	});
+	$( document ).on( "pageshow", "#page4", function() {
 		selectUser();
 	});
 	</script>
@@ -45,7 +49,7 @@
 			</div>
 		</div>
 		<div data-role="main" class="ui-content">
-			<h1>News Feed page</h1>
+			<h1>News Feed</h1>
 		</div>
 		<div data-role="footer" data-theme="b" data-position="fixed">
 			<h2>&copy; MIM Team 2014</h2>
