@@ -17,7 +17,7 @@
 	
 	<script src="js/db_map.js"></script>
 	<script>
-	$( document ).on( "pageinit", "#map-page", function() {
+	$( document ).on( "pageshow", "#map-page", function() {
 		showMap();
 	});
 	</script>
@@ -58,7 +58,7 @@
 				</ul>
 			</div>
 		</div>
-		<div role="main" class="ui-content" id="map-canvas">
+		<div role="main" class="ui-content" id="map-canvas" align="center">
 			<!-- map loads here... -->
 		</div>
 		<div data-role="footer">

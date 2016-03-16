@@ -1,4 +1,5 @@
 function showMap(){
+	console.log('Showing map');
 	var defaultLatLng = new google.maps.LatLng(34.0983425, -118.3267434);  // Default to Hollywood, CA when no geolocation support
     if ( navigator.geolocation ) {
         function success(pos) {
@@ -14,6 +15,7 @@ function showMap(){
         drawMap(defaultLatLng);  // No geolocation support, show default map
     }
     function drawMap(latlng) {
+		console.log('Lat Long:' + latlng);
         var myOptions = {
             zoom: 10,
             center: latlng,
