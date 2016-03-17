@@ -227,21 +227,24 @@ function dataNewsSelectHandler( transaction, results ) {
 			// Handle the results
 			var i=0,
 				row;
-			
-			console.log('Num of rows: ' + results.rows.length);		
 			var newsContent = '';
-		    for (i ; i<results.rows.length; i++) {
-				
-				
-				
-		    	row = results.rows.item(i);
-				console.log('Div id : '  + row['city']+row['news_id'] );
-				var divId = row['city']+row['news_id'];
-				var subDesc = row['description'].substring(0,10)+ ' .....';
-				newsContent += "<div id='" + divId + "' data-role='collapsible'><h4>" + row['emergencyType'] + '</h4> ' + subDesc + "<p>" + row['description'] + "</p></div>";
-				  
-		    }	
-			
+			console.log('Num of rows: ' + results.rows.length);		
+			if(results.rows.length == 0){
+				newsContent = "<h4>No new emergencies reported at " + userCity + ". You can be safe.</h4>"
+			}
+			else{
+				for (i ; i<results.rows.length; i++) {
+					
+					
+					
+					row = results.rows.item(i);
+					console.log('Div id : '  + row['city']+row['news_id'] );
+					var divId = row['city']+row['news_id'];
+					var subDesc = row['description'].substring(0,10)+ ' .....';
+					newsContent += "<div id='" + divId + "' data-role='collapsible'><h4>" + row['emergencyType'] + '</h4> ' + subDesc + "<p>" + row['description'] + "</p></div>";
+					  
+				}	
+			}
 			//console.log(newsContent);
 			
 			$('#newsfeed').html(newsContent);
