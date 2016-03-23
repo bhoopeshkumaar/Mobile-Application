@@ -1,29 +1,37 @@
-var userCity = '';
+var userCity ='';
+var emergencyType = '';
+var description = '';
+var eventLat = '';
+var eventLong = '';
 
 function showMap(){
 	console.log('Showing map');
+	var divId = "map-canvas";
 	var defaultLatLng = new google.maps.LatLng(34.0983425, -118.3267434);  // Default to Hollywood, CA when no geolocation support
     if ( navigator.geolocation ) {
         function success(pos) {
             // Location found, show map with these coordinates
-            drawMap(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
+            drawMap(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude), divId);
         }
         function fail(error) {
-            drawMap(defaultLatLng);  // Failed to find location, show default map
+            drawMap(defaultLatLng, divId);  // Failed to find location, show default map
         }
         // Find the users current position.  Cache the location for 5 minutes, timeout after 6 seconds
         navigator.geolocation.getCurrentPosition(success, fail, {enableHighAccuracy:true, timeout: 6000});
     } else {
-        drawMap(defaultLatLng);  // No geolocation support, show default map
+        drawMap(defaultLatLng, divId);  // No geolocation support, show default map
     }
-    function drawMap(latlng) {
+    
+}
+
+function drawMap(latlng, divId) {
 		console.log('Lat Long:' + latlng);
         var myOptions = {
             zoom: 10,
             center: latlng,
             mapTypeId: google.maps.MapTypeId.ROADMAP
         };
-        var map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
+        var map = new google.maps.Map(document.getElementById(divId), myOptions);
         // Add an overlay to the map of current lat/lng
         var marker = new google.maps.Marker({
             position: latlng,
@@ -36,8 +44,9 @@ function showMap(){
 		});
 
 		infowindow.open(map,marker);*/
+		
+		//google.maps.event.trigger(map, 'resize');
 	}
-}
 
 function initDatabase() {
 	console.log("into init database");
@@ -85,10 +94,14 @@ function nullDataHandler() {
 
 function errorHandler( transaction, error ) {
 			
-			console.log("Error handling");
+			if(error.code == null || error.code == 'undefined'){
+				return;
+			}
+			
 		 	if (error.code===1){
 		 		// DB Table already exists
-		 	} else {
+		 	} 
+			else {
 		    	// Error is a human-readable string.
 			    console.log('Oops.  Error was '+error.message+' (Code '+ error.code +')');
 		 	}
@@ -99,7 +112,7 @@ function createTables(){
 	DEMODB.transaction(
         function (transaction) {
         	transaction.executeSql('CREATE TABLE IF NOT EXISTS user(id INTEGER NOT NULL PRIMARY KEY, user_name TEXT NOT NULL);', [], nullDataHandler, errorHandler);
-			transaction.executeSql('CREATE TABLE IF NOT EXISTS news(news_id INTEGER NOT NULL PRIMARY KEY, city INTEGER NOT NULL, emergencyType TEXT NOT NULL, description TEXT NOT NULL );', [], nullDataHandler, errorHandler);
+			transaction.executeSql('CREATE TABLE IF NOT EXISTS news(news_id INTEGER NOT NULL PRIMARY KEY, city INTEGER NOT NULL, emergencyType TEXT NOT NULL, description TEXT NOT NULL, latitude TEXT, longitude TEXT);', [], nullDataHandler, errorHandler);
         }
     );
 	
@@ -129,7 +142,9 @@ function getUserLocation(){
 					if(ac.types.indexOf("country") >= 0) country = ac.long_name;
 				}
 				
+				console.log("Setting user location...");
 				userCity = city;
+				console.log("Inside get User location: User loc is " + userCity);
 				//only report if we got Good Stuff
 				if(city != '' && state != '' && country != '') {
 					$("#currentLocation").html("<h4>Your location is "+city+", "+state+ ", " + country + "!</h4>");
@@ -181,7 +196,25 @@ function populateNews(){
 				}
 			);
 }
-		
+
+function insertNews(){
+
+DEMODB.transaction(
+				
+			    function (transaction) {
+				console.log('Lattt: ' + eventLat + 'Longi: ' + eventLong);
+							if(eventLat == '' && eventLong == ''){
+								transaction.executeSql("INSERT INTO news(city, emergencyType, description) VALUES (?, ?, ?)", [userCity, emergencyType, description], errorHandler);
+							}
+							else{
+								transaction.executeSql("INSERT INTO news(city, emergencyType, description, latitude, longitude) VALUES (?, ?, ?, ?, ?)", [userCity, emergencyType, description, eventLat, eventLong], errorHandler);
+							}
+							
+				}
+			);
+
+	
+}		
 		
 function selectUser() {
 	    	
@@ -193,12 +226,11 @@ function selectUser() {
 	    }
 		
 function selectNews(){
-	
-	console.log("User city : " + userCity);
+
 	
 	DEMODB.transaction(
 			    function (transaction) {
-			        transaction.executeSql("SELECT * FROM news where city = ?;", [userCity], dataNewsSelectHandler, errorHandler);
+			        transaction.executeSql("SELECT * FROM news where city = ? order by news_id desc;", [userCity], dataNewsSelectHandler, errorHandler);
 			    }
 			);
 	
@@ -224,29 +256,101 @@ function dataUserSelectHandler( transaction, results ) {
 	    }
 		
 function dataNewsSelectHandler( transaction, results ) {
+
+			console.log("Inside dataNewsSelectHandler. city name:  " + userCity);
 			// Handle the results
 			var i=0,
 				row;
 			var newsContent = '';
-			console.log('Num of rows: ' + results.rows.length);		
+			console.log('Num of rows: ' + results.rows.length);	
+			
+			$("#set").empty();
+			
 			if(results.rows.length == 0){
-				newsContent = "<h4>No new emergencies reported at " + userCity + ". You can be safe.</h4>"
+				newsContent = $("#set").append("<h4>No new emergencies reported at " + userCity + ". You can be safe.</h4>");
 			}
 			else{
 				for (i ; i<results.rows.length; i++) {
-					
-					
-					
 					row = results.rows.item(i);
 					console.log('Div id : '  + row['city']+row['news_id'] );
+					
 					var divId = row['city']+row['news_id'];
+					var mapDivId = 'map'+row['news_id'];
+					
 					var subDesc = row['description'].substring(0,10)+ ' .....';
-					newsContent += "<div id='" + divId + "' data-role='collapsible'><h4>" + row['emergencyType'] + '</h4> ' + subDesc + "<p>" + row['description'] + "</p></div>";
-					  
+					newsContent = "<div id='" + divId + "' data-role='collapsible' data-collapsed='true'><h4>" + row['emergencyType'] + "</h4><div class= 'newsMapDiv' id='"+mapDivId+"'></div> " + subDesc + "<p>" + row['description'] + "</p></div>";
+					
+					//console.log('News content: ' + newsContent);
+					
+					$("#set").append( newsContent ).collapsibleset('refresh');
+					
+					console.log('Laaaaatttt :' + row['latitude'] + ' longggiiii : ' + row['longitude'] );
+					
+					if(row['latitude'] != null && row['latitude'] != ''){
+						console.log("Latitude and longitude is not null :" + row['latitude']);
+						var latitude = row['latitude'];
+						var longitude = row['longitude'];
+						var latLong = new google.maps.LatLng(parseFloat(latitude), parseFloat(longitude));
+						console.log("Drawing new map in each of the collapsible. lat long: " + latLong);
+						drawMap(latLong, mapDivId);
+					}
+					else{
+						console.log("No co-ordinates information..");
+						$('#'+mapDivId).html('No information on the location co-ordinates.');
+					}
 				}	
 			}
 			//console.log(newsContent);
 			
-			$('#newsfeed').html(newsContent);
 }		
+
+
+function addNewsIntoDB(){
+	
+	eventLat = '';
+	eventLong = '';
+	console.log("Notifying event....");
+	 $("input[name=radio-choice]:checked").each(function() {
+        emergencyType = $(this).val();
+    });
+	
+	description = $('#description').val().trim();
+	
+	console.log("Emergency Type: " + emergencyType + " Desc :" + description + ' User city : ' + userCity);
+	
+	$("input[name=radio-choice-exactaddr]:checked").each(function() {
+        if($(this).val() == 'yes'){
+		    var event_address = $('#address').val();
+			getLatLongForLocation(event_address);
+		}
+    });
+	
+	setTimeout(insertNews(), 4000);
+}
+
+
+function getLatLongForLocation(address){
+
+console.log("Address getting lat longggg .... " + address);
+var geocoder = new google.maps.Geocoder();
+geocoder.geocode( { 'address': address}, function(results, status) {
+
+  if (status == google.maps.GeocoderStatus.OK) {
+    var latitude = results[0].geometry.location.lat();
+    var longitude = results[0].geometry.location.lng();
+    console.log(latitude + " "  +  longitude);
+	eventLat = latitude;
+	eventLong = longitude;
+  } 
+}); 
+}
+
+
+function reset(){
+		
+		$("input[name='radio-choice']:first").attr("checked",true).checkboxradio("refresh");
+		$("input[name='radio-choice-exactaddr']").attr("checked",true).checkboxradio("refresh");
+		
+		$('#eventMap').hide();
+}
 

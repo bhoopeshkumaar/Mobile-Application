@@ -1,12 +1,13 @@
 <!DOCTYPE html> 
 <html> 
 <head> 
-	<title>My Page</title> 
+	<title>VIGIL</title> 
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
 	<link rel="stylesheet" href="css/jquery.mobile142.css" />
 	<link rel="stylesheet" href="css/map.css" />
 	<script src="js/jquery191.js"></script>
-	<script type="text/javascript" src="js/google_maps.js"></script>
+	<!--<script type="text/javascript" src="js/google_maps.js"></script>-->
+	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCyq28yaQFLLi9tGHaNGMsaA9WQy7yzbVE"></script>
 	
 	<script>
     $(document).bind('mobileinit',function(){
@@ -18,11 +19,21 @@
 	<script src="js/db_map.js"></script>
 	<script>
 	$( document ).on( "pageshow", "#map-page", function() {
+		
+		
+		reset();
+		
 		showMap();
 		getUserLocation();
+		$('#eventMap').hide();
 	});
+	
+	
+	
 	$( document ).on( "pageinit", "#page1", function() {
 		initDatabase();
+	});
+	$( document ).on( "pagebeforeshow", "#page1", function() {
 		getUserLocation();
 	});
 	$( document ).on( "pageshow", "#page1", function() {
@@ -33,9 +44,25 @@
 	});
 	
 	$( document ).on( "click", "#notify_btn", function(e) {
-		console.log("Notifying event");
+		addNewsIntoDB();
 	});
 	
+	$( document ).on( "click", "#lat_long_btn", function(e) {
+		getLatLongForLocation();
+	});
+	
+	$( document ).on( "change", "#radio-addr-1", function(e) {
+			$('#eventMap').show();
+			//$('#eventMap').css("visibility","visible");
+	});
+	
+	$( document ).on( "change", "#radio-addr-2", function(e) {
+			$('#eventMap').hide();
+			//$('#eventMap').css("visibility","hidden");
+	});
+	
+	
+	  
 	</script>
 </head> 
 <body> 
@@ -55,11 +82,11 @@
 			</div>
 		</div>
 		<div data-role="main" class="ui-content">
-			<h1>News Feed</h1>
-			<div id='newsfeed'></div>
+			<h1>Active news</h1>
+			<div data-role="collapsible-set" data-content-theme="d" id="set"></div>
 			
 		</div>
-		<div data-role="footer" data-theme="b" data-position="fixed">
+		<div data-role="footer" data-theme="b" data-position="fixed" data-hide-during-focus="" data-tap-toggle="false">
 			<h2>&copy; MIM Team 2014</h2>
 		</div>	
 	</div>
@@ -82,26 +109,46 @@
 		<div id="notifyform">
 			<fieldset data-role="controlgroup">
 					<legend>Choose an emergency type:</legend>
-					<input type="radio" name="radio-choice" id="radio-choice-1" value="choice-1"/>
+					<input type="radio" name="radio-choice" id="radio-choice-1" value="Theft" />
 					<label for="radio-choice-1">Theft</label>
 
-					<input type="radio" name="radio-choice" id="radio-choice-2" value="choice-2"  />
+					<input type="radio" name="radio-choice" id="radio-choice-2" value="Fire"  />
 					<label for="radio-choice-2">Fire</label>
 
-					<input type="radio" name="radio-choice" id="radio-choice-3" value="choice-3"  />
+					<input type="radio" name="radio-choice" id="radio-choice-3" value="Medical"  />
 					<label for="radio-choice-3">Medical</label>
 
-					<input type="radio" name="radio-choice" id="radio-choice-4" value="choice-4"  />
+					<input type="radio" name="radio-choice" id="radio-choice-4" value="Other"  />
 					<label for="radio-choice-4">Other</label>
 			</fieldset>
 				
 				<label for="textarea-a">Description:</label>
-				<textarea name="textarea" id="textarea-a">
+				<textarea name="textarea" id="description">
 				</textarea>
 				
+				<fieldset data-role="controlgroup" id="addrFieldSet">
+					<legend>Do you want to enter the exact address:</legend>
+					<input type="radio" name="radio-choice-exactaddr" id="radio-addr-1" value="yes"  />
+					<label for="radio-addr-1">Yes</label>
+
+					<input type="radio" name="radio-choice-exactaddr" id="radio-addr-2" value="no" />
+					<label for="radio-addr-2">No</label>
+				</fieldset>
+				
+				<div id="eventMap">
+					<div data-role="fieldcontain">
+						<label for="name">Address:</label>
+						<input type="text" name="address" id="address" value="" placeholder="Building number, street name  and city is needed"/>
+					</div>
+				</div>
+				
+				
+				
 				<input type="button" value="Notify" id="notify_btn">
+				<!--<input type="button" value="LAt_Long" id="lat_long_btn">-->
+				
 		</div>
-		<div data-role="footer" data-theme="b" data-position="fixed">
+		<div data-role="footer" data-theme="b" data-position="fixed" data-hide-during-focus="" data-tap-toggle="false">
 			<h2>&copy; MIM Team 2014</h2>
 		</div>
 	</div>
@@ -122,7 +169,7 @@
 		<div data-role="main" class="ui-content">
 			<h1>Trends</h1>
 		</div>
-		<div data-role="footer" data-theme="b" data-position="fixed">
+		<div data-role="footer" data-theme="b" data-position="fixed" data-hide-during-focus="" data-tap-toggle="false">
 			<h2>&copy; MIM Team 2014</h2>
 		</div>	
 	</div>
@@ -143,14 +190,14 @@
 		<div data-role="main" class="ui-content">
 			<h1>Contact page</h1>
 		</div>
-		<div data-role="footer" data-theme="b" data-position="fixed">
+		<div data-role="footer" data-theme="b" data-position="fixed" data-hide-during-focus="" data-tap-toggle="false">
 			<h2>&copy; MIM Team 2014</h2>
 		</div>	
 	</div>
 	
 	<div data-role="page" id="page4">
 		<div data-role="header" data-theme="b">
-			<h1>Vigil App</h1>
+			<h1><img src="images/logo1.png"/></h1>
 			<div data-role="navbar">
 				<ul>
 					<li><a href="#page1" data-icon="info">News Feed</a></li>
@@ -164,8 +211,11 @@
 		<div data-role="main" class="ui-content">
 			<h1>User profile</h1>
 			<div id="user_n"></div>
+			
+		
+			
 		</div>
-		<div data-role="footer" data-theme="b" data-position="fixed">
+		<div data-role="footer" data-theme="b" data-position="fixed" data-hide-during-focus="" data-tap-toggle="false">
 			<h2>&copy; MIM Team 2014</h2>
 		</div>	
 	</div>
