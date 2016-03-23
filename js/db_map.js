@@ -278,7 +278,7 @@ function dataNewsSelectHandler( transaction, results ) {
 					var mapDivId = 'map'+row['news_id'];
 					
 					var subDesc = row['description'].substring(0,10)+ ' .....';
-					newsContent = "<div id='" + divId + "' data-role='collapsible' data-collapsed='true'><h4>" + row['emergencyType'] + "</h4><div class= 'newsMapDiv' id='"+mapDivId+"'></div> " + subDesc + "<p>" + row['description'] + "</p></div>";
+					newsContent = "<div id='" + divId + "' data-role='collapsible' data-collapsed='true'><h4>" + subDesc + "</h4> " + 'Type of emergency: ' + row['emergencyType']  + "<p>" + row['description'] + "</p><div class= 'newsMapDiv' id='"+mapDivId+"'></div></div>";
 					
 					//console.log('News content: ' + newsContent);
 					
@@ -326,6 +326,8 @@ function addNewsIntoDB(){
     });
 	
 	setTimeout(insertNews(), 4000);
+	
+	return true;
 }
 
 

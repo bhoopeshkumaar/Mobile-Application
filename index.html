@@ -32,6 +32,7 @@
 	
 	$( document ).on( "pageinit", "#page1", function() {
 		initDatabase();
+		getUserLocation();
 	});
 	$( document ).on( "pagebeforeshow", "#page1", function() {
 		getUserLocation();
@@ -43,13 +44,12 @@
 		selectUser();
 	});
 	
-	$( document ).on( "click", "#notify_btn", function(e) {
+	/*$( document ).on( "click", "#notify_btn", function(e) {
 		addNewsIntoDB();
-	});
+		return true;
+	});*/
 	
-	$( document ).on( "click", "#lat_long_btn", function(e) {
-		getLatLongForLocation();
-	});
+	
 	
 	$( document ).on( "change", "#radio-addr-1", function(e) {
 			$('#eventMap').show();
@@ -143,8 +143,9 @@
 				</div>
 				
 				
-				
-				<input type="button" value="Notify" id="notify_btn">
+				<a href="#popupInfodiv" id="notify_btn"  data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all ui-icon-check ui-btn-icon-left" onclick="return addNewsIntoDB();">Notify</a>
+				<div id ="popupInfodiv" data-role="popup" class="ui-content" style="min-width:250px;"> <h2>Thanks for your information. Concerned authorities will take immediate action. Once again thanks for your time.</h2></div>
+				<!--<input type="button" value="Notify" id="notify_btn"  data-inline="true" data-role="button">-->
 				<!--<input type="button" value="LAt_Long" id="lat_long_btn">-->
 				
 		</div>
