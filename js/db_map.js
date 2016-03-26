@@ -4,6 +4,8 @@ var description = '';
 var eventLat = '';
 var eventLong = '';
 
+var cityMap = [];
+
 function showMap(){
 	console.log('Showing map');
 	var divId = "map-canvas";
@@ -278,7 +280,7 @@ function dataNewsSelectHandler( transaction, results ) {
 					var mapDivId = 'map'+row['news_id'];
 					
 					var subDesc = row['description'].substring(0,10)+ ' .....';
-					newsContent = "<div id='" + divId + "' data-role='collapsible' data-collapsed='true'><h4>" + subDesc + "</h4> " + 'Type of emergency: ' + row['emergencyType']  + "<p>" + row['description'] + "</p><div class= 'newsMapDiv' id='"+mapDivId+"'></div></div>";
+					newsContent = "<div id='" + divId + "' data-role='collapsible' data-collapsed='true' data-iconpos='right'><h4> <img src='images/new.gif' alt='new'/>" + '  '+ subDesc + "</h4> " + 'Type of emergency: ' + row['emergencyType']  + "<p>" + row['description'] + "</p><div class= 'newsMapDiv' id='"+mapDivId+"'></div></div>";
 					
 					//console.log('News content: ' + newsContent);
 					
@@ -356,3 +358,83 @@ function reset(){
 		$('#eventMap').hide();
 }
 
+function getCityDataCount(){
+
+			DEMODB.transaction(
+			    function (transaction) {
+			        transaction.executeSql("SELECT * FROM news", [], dataCityCountSelectHandler, errorHandler);
+			    }
+			);
+			
+			
+}
+
+function dataCityCountSelectHandler( transaction, results ){
+			var i=0,
+				row;
+			
+			cityMap=[];
+			
+			console.log("Total rows: " + results.rows.length);
+			
+		    for (i ; i<results.rows.length; i++) {
+		        
+		    	row = results.rows.item(i);
+		        
+				
+				if(cityMap[row['city']] == null || cityMap[row['city']] == 'undefined' ){
+					cityMap[row['city']] = 1;
+				}
+				else{
+					cityMap[row['city']]+=1;
+				}
+				
+				console.log("City ::" + row['city'] + " Count : " + cityMap[row['city']]);
+				
+				
+				
+		    }	
+			
+			//console.log("CITY MAP:::::: " + cityMap);
+
+}
+
+function drawChart(chartDivId){
+var barChart;
+
+console.log("Drawing chart... ");
+
+var cityNames = [];
+var cityCount = [];
+
+console.log("CITY MAP:::::: " + cityMap);
+
+for (var i in cityMap){
+cityNames.push(i);
+cityCount.push(cityMap[i]);
+}
+
+console.log("City Names: " + cityNames);
+console.log("City Coutn : " + cityCount);
+
+if (barChart == null){
+				var data = {
+					labels: cityNames,
+					datasets: [{
+						label: "No of Cases",
+						fillColor: "rgba(235, 105, 18,0.5)",
+						strokeColor: "rgba(235, 105, 18,0.8)",
+						highlightFill: "rgba(235, 105, 18,0.75)",
+						highlightStroke: "rgba(235, 105, 18,1)",
+						data:  cityCount
+					}]
+				};
+			
+				var ctx = document.getElementById(chartDivId).getContext("2d");
+			
+				window.barChart = new Chart(ctx).Bar(data, {
+					responsive: true // change to "false" and it will work
+				});
+			}           
+
+}

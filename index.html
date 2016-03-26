@@ -8,6 +8,7 @@
 	<script src="js/jquery191.js"></script>
 	<!--<script type="text/javascript" src="js/google_maps.js"></script>-->
 	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCyq28yaQFLLi9tGHaNGMsaA9WQy7yzbVE"></script>
+	<script type="text/javascript" src="js/Chart.js"></script>
 	
 	<script>
     $(document).bind('mobileinit',function(){
@@ -18,50 +19,50 @@
 	
 	<script src="js/db_map.js"></script>
 	<script>
-	$( document ).on( "pageshow", "#map-page", function() {
-		
-		
+	
+	$( document ).on( "pagebeforeshow", "#map-page", function() {
 		reset();
-		
-		showMap();
-		getUserLocation();
 		$('#eventMap').hide();
 	});
 	
-	
+	$( document ).on( "pageshow", "#map-page", function() {
+		showMap();
+		getUserLocation();
+	});
 	
 	$( document ).on( "pageinit", "#page1", function() {
 		initDatabase();
 		getUserLocation();
 	});
+	
 	$( document ).on( "pagebeforeshow", "#page1", function() {
 		getUserLocation();
 	});
+	
 	$( document ).on( "pageshow", "#page1", function() {
 		selectNews();
 	});
+	
 	$( document ).on( "pageshow", "#page4", function() {
 		selectUser();
 	});
 	
-	/*$( document ).on( "click", "#notify_btn", function(e) {
-		addNewsIntoDB();
-		return true;
-	});*/
-	
-	
 	
 	$( document ).on( "change", "#radio-addr-1", function(e) {
 			$('#eventMap').show();
-			//$('#eventMap').css("visibility","visible");
 	});
 	
 	$( document ).on( "change", "#radio-addr-2", function(e) {
 			$('#eventMap').hide();
-			//$('#eventMap').css("visibility","hidden");
 	});
 	
+	$(document).on( "pagebeforeshow", "#cityTrendChartPage", function() {
+		getCityDataCount();
+	});
 	
+	$(document).on( "pageshow", "#cityTrendChartPage", function() {
+			drawChart("cityTrendChart");
+	});
 	  
 	</script>
 </head> 
@@ -74,7 +75,7 @@
 				<ul>
 					<li><a href="#page1" data-icon="info">News Feed</a></li>
 					<li><a href="#map-page" data-icon="location">Notify</a></li>
-					<li><a href="#page2" data-icon="eye">Trends</a></li>
+					<li><a href="#page2" data-icon="eye">Analytics</a></li>
 					<li><a href="#page3" data-icon="mail">Contact</a></li>
 					<li><a href="#page4" data-icon="user">User Profile</a></li>
 					
@@ -98,7 +99,7 @@
 				<ul>
 					<li><a href="#page1" data-icon="info">News Feed</a></li>
 					<li><a href="#map-page" data-icon="location">Notify</a></li>
-					<li><a href="#page2" data-icon="eye">Trends</a></li>
+					<li><a href="#page2" data-icon="eye">Analytics</a></li>
 					<li><a href="#page3" data-icon="mail">Contact</a></li>
 					<li><a href="#page4" data-icon="user">User Profile</a></li>
 				</ul>
@@ -144,7 +145,10 @@
 				
 				
 				<a href="#popupInfodiv" id="notify_btn"  data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all ui-icon-check ui-btn-icon-left" onclick="return addNewsIntoDB();">Notify</a>
-				<div id ="popupInfodiv" data-role="popup" class="ui-content" style="min-width:250px;"> <h2>Thanks for your information. Concerned authorities will take immediate action. Once again thanks for your time.</h2></div>
+				<div id ="popupInfodiv" data-role="popup" class="ui-content" style="min-width:250px;"> 
+						<h5>Thanks for your information. Concerned authorities will take immediate action. Once again thanks for your time.</h5>
+						<a href="#map-page" id="cancel_btn" class="ui-btn ui-btn-inline ui-corner-all ui-icon-check ui-btn-icon-left" >Close</a>
+				</div>
 				<!--<input type="button" value="Notify" id="notify_btn"  data-inline="true" data-role="button">-->
 				<!--<input type="button" value="LAt_Long" id="lat_long_btn">-->
 				
@@ -161,19 +165,28 @@
 				<ul>
 					<li><a href="#page1" data-icon="info">News Feed</a></li>
 					<li><a href="#map-page" data-icon="location">Notify</a></li>
-					<li><a href="#page2" data-icon="eye">Trends</a></li>
+					<li><a href="#page2" data-icon="eye">Analytics</a></li>
 					<li><a href="#page3" data-icon="mail">Contact</a></li>
 					<li><a href="#page4" data-icon="user">User Profile</a></li>
 				</ul>
 			</div>
 		</div>
-		<div data-role="main" class="ui-content">
-			<h1>Trends</h1>
+		
+			
+			<div data-role="content" id = "chart">
+				<h1>Analytics</h1>
+				<ul data-role="listview" data-filter="false" data-inset="true" data-theme="c" data-divider-theme="b"> <!-- TODO Try adding data divider -->
+					<li><a href="#cityTrendChartPage" data-transition="pop">City Trend</a></li>
+					<li><a href="#emergencyTrendChart" data-transition="pop">Emergency Trend</a></li>
+					<li><a href="#bubbleChart" data-transition="pop">Bubble Viz.</a></li>
+				</ul>
+			</div>
+			<div data-role="footer" data-theme="b" data-position="fixed" data-hide-during-focus="" data-tap-toggle="false">
+				<h2>&copy; MIM Team 2014</h2>
+			</div>	
 		</div>
-		<div data-role="footer" data-theme="b" data-position="fixed" data-hide-during-focus="" data-tap-toggle="false">
-			<h2>&copy; MIM Team 2014</h2>
-		</div>	
-	</div>
+		
+	
 	
 	<div data-role="page" id="page3">
 		<div data-role="header" data-theme="b">
@@ -182,7 +195,7 @@
 				<ul>
 					<li><a href="#page1" data-icon="info">News Feed</a></li>
 					<li><a href="#map-page" data-icon="location">Notify</a></li>
-					<li><a href="#page2" data-icon="eye">Trends</a></li>
+					<li><a href="#page2" data-icon="eye">Analytics</a></li>
 					<li><a href="#page3" data-icon="mail">Contact</a></li>
 					<li><a href="#page4" data-icon="user">User Profile</a></li>
 				</ul>
@@ -203,7 +216,7 @@
 				<ul>
 					<li><a href="#page1" data-icon="info">News Feed</a></li>
 					<li><a href="#map-page" data-icon="location">Notify</a></li>
-					<li><a href="#page2" data-icon="eye">Trends</a></li>
+					<li><a href="#page2" data-icon="eye">Analytics</a></li>
 					<li><a href="#page3" data-icon="mail">Contact</a></li>
 					<li><a href="#page4" data-icon="user">User Profile</a></li>
 				</ul>
@@ -221,6 +234,30 @@
 		</div>	
 	</div>
 	
+	<!-- Chart Divs -->
+	
+	<div data-role="page" id="cityTrendChartPage">
+		<div data-role="header" data-theme="b">
+			<h1><img src="images/logo1.png"/></h1>
+			<div data-role="navbar">
+				<ul>
+					<li><a href="#page1" data-icon="info">News Feed</a></li>
+					<li><a href="#map-page" data-icon="location">Notify</a></li>
+					<li><a href="#page2" data-icon="eye">Analytics</a></li>
+					<li><a href="#page3" data-icon="mail">Contact</a></li>
+					<li><a href="#page4" data-icon="user">User Profile</a></li>
+				</ul>
+			</div>
+		</div>
+		<div data-role="main" class="ui-content">
+				<a href="#page2" data-transition="slide" data-role="button" data-inline="true">Back</a> <!-- TODO make it smaller -->
+				<h2 align="center">City Trends</h2>
+				<canvas id="cityTrendChart" height="300" width="300"></canvas>
+		</div>
+		<div data-role="footer" data-theme="b" data-position="fixed" data-hide-during-focus="" data-tap-toggle="false">
+			<h2>&copy; MIM Team 2014</h2>
+		</div>	
+	</div>
 	
 	
 </body>
