@@ -5,6 +5,7 @@ var eventLat = '';
 var eventLong = '';
 
 var cityMap = [];
+var emergencyMap = [];
 
 function showMap(){
 	console.log('Showing map');
@@ -358,6 +359,62 @@ function reset(){
 		$('#eventMap').hide();
 }
 
+
+
+function getEmergencyMap(){
+	DEMODB.transaction(
+			    function (transaction) {
+			        transaction.executeSql("SELECT * FROM news", [], emergencyCountSelectHandler, errorHandler);
+			    }
+			);
+}
+function emergencyCountSelectHandler( transaction, results ){
+
+	var i=0,
+	row;		
+	emergencyMap=[];
+	
+	console.log("Total rows: " + results.rows.length);
+	
+	  for (i ; i<results.rows.length; i++) {
+		    	row = results.rows.item(i);
+		        var ctyMap = [];
+				
+				console.log("emergencyMap[row['emergencyType']] :: " + emergencyMap[row['emergencyType']]);
+				
+				if(emergencyMap[row['emergencyType']] != null && emergencyMap[row['emergencyType']] != 'undefined' ){
+					ctyMap = emergencyMap[row['emergencyType']] ;
+				}
+			
+				
+				console.log("ctyMap[row['city']]:: " + ctyMap[row['city']]);
+				
+				if(ctyMap[row['city']] == 'undefined' ){
+						ctyMap[row['city']] = 1; 
+					}
+					else{
+						ctyMap[row['city']]+=1;
+					}
+					
+				console.log("City ::" + row['city'] + " Count : " + ctyMap[row['city']]);
+				emergencyMap[row['emergencyType']] = ctyMap;
+		    }	
+			
+		
+		console.log("EMmergency Map:....... ");
+		
+		for (var i in emergencyMap){
+			console.log("Emergency Type : " + i);
+			console.log("Emergency Map for each city: " + emergencyMap[i]);
+			for(var j in emergencyMap[i]){
+				console.log("City : " + j);
+				
+				//console.log("Count: " + emergencyMap[i]);
+			}
+			console.log("----");
+		}
+}
+
 function getCityDataCount(){
 
 			DEMODB.transaction(
@@ -365,8 +422,6 @@ function getCityDataCount(){
 			        transaction.executeSql("SELECT * FROM news", [], dataCityCountSelectHandler, errorHandler);
 			    }
 			);
-			
-			
 }
 
 function dataCityCountSelectHandler( transaction, results ){
@@ -381,7 +436,6 @@ function dataCityCountSelectHandler( transaction, results ){
 		        
 		    	row = results.rows.item(i);
 		        
-				
 				if(cityMap[row['city']] == null || cityMap[row['city']] == 'undefined' ){
 					cityMap[row['city']] = 1;
 				}
@@ -395,13 +449,11 @@ function dataCityCountSelectHandler( transaction, results ){
 				
 		    }	
 			
-			//console.log("CITY MAP:::::: " + cityMap);
-
 }
 
-function drawChart(chartDivId){
-var barChart;
+function drawBarChart(chartDivId){
 
+var barChart;
 console.log("Drawing chart... ");
 
 var cityNames = [];
@@ -414,8 +466,6 @@ cityNames.push(i);
 cityCount.push(cityMap[i]);
 }
 
-console.log("City Names: " + cityNames);
-console.log("City Coutn : " + cityCount);
 
 if (barChart == null){
 				var data = {

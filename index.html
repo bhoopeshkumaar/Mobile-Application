@@ -61,8 +61,17 @@
 	});
 	
 	$(document).on( "pageshow", "#cityTrendChartPage", function() {
-			drawChart("cityTrendChart");
+			drawBarChart("cityTrendChart");
 	});
+	  
+	$(document).on( "pagebeforeshow", "#emergencyTrendChartPage", function() {
+		getEmergencyMap();
+	});
+	
+	$(document).on( "pageshow", "#emergencyTrendChartPage", function() {
+			drawBarChart("cityTrendChart");
+	});
+	    
 	  
 	</script>
 </head> 
@@ -177,7 +186,7 @@
 				<h1>Analytics</h1>
 				<ul data-role="listview" data-filter="false" data-inset="true" data-theme="c" data-divider-theme="b"> <!-- TODO Try adding data divider -->
 					<li><a href="#cityTrendChartPage" data-transition="pop">City Trend</a></li>
-					<li><a href="#emergencyTrendChart" data-transition="pop">Emergency Trend</a></li>
+					<li><a href="#emergencyTrendChartPage" data-transition="pop">Emergency Trend</a></li>
 					<li><a href="#bubbleChart" data-transition="pop">Bubble Viz.</a></li>
 				</ul>
 			</div>
@@ -259,6 +268,29 @@
 		</div>	
 	</div>
 	
+	
+	<div data-role="page" id="emergencyTrendChartPage">
+		<div data-role="header" data-theme="b">
+			<h1><img src="images/logo1.png"/></h1>
+			<div data-role="navbar">
+				<ul>
+					<li><a href="#page1" data-icon="info">News Feed</a></li>
+					<li><a href="#map-page" data-icon="location">Notify</a></li>
+					<li><a href="#page2" data-icon="eye">Analytics</a></li>
+					<li><a href="#page3" data-icon="mail">Contact</a></li>
+					<li><a href="#page4" data-icon="user">User Profile</a></li>
+				</ul>
+			</div>
+		</div>
+		<div data-role="main" class="ui-content">
+				<a href="#page2" data-transition="slide" data-role="button" data-inline="true">Back</a> <!-- TODO make it smaller -->
+				<h2 align="center">Emergency Trends</h2>
+				<canvas id="emergencyTrendChart" height="300" width="300"></canvas>
+		</div>
+		<div data-role="footer" data-theme="b" data-position="fixed" data-hide-during-focus="" data-tap-toggle="false">
+			<h2>&copy; MIM Team 2014</h2>
+		</div>	
+	</div>
 	
 </body>
 </html>
