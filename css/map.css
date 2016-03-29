@@ -10,3 +10,13 @@
 				display:block; 
 }
 
+#map_markers { 
+				padding-top:30%;
+				padding-bottom:30%;
+				height:100%;
+				width:100%;
+				max-height:none;
+				overflow:hidden;
+				display:block;
+}
+

@@ -8,6 +8,10 @@ var cityMap = [];
 var emergencyMap = [];
 var pieChart;
 var subBarChart;
+var barChart;
+
+var location = [];
+
 function showMap(){
 	console.log('Showing map');
 	var divId = "map-canvas";
@@ -15,6 +19,8 @@ function showMap(){
     if ( navigator.geolocation ) {
         function success(pos) {
             // Location found, show map with these coordinates
+			eventLat = pos.coords.latitude;
+			eventLong = pos.coords.longitude;
             drawMap(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude), divId);
         }
         function fail(error) {
@@ -116,7 +122,7 @@ function createTables(){
 	DEMODB.transaction(
         function (transaction) {
         	transaction.executeSql('CREATE TABLE IF NOT EXISTS user(id INTEGER NOT NULL PRIMARY KEY, user_name TEXT NOT NULL);', [], nullDataHandler, errorHandler);
-			transaction.executeSql('CREATE TABLE IF NOT EXISTS news(news_id INTEGER NOT NULL PRIMARY KEY, city INTEGER NOT NULL, emergencyType TEXT NOT NULL, description TEXT NOT NULL, latitude TEXT, longitude TEXT);', [], nullDataHandler, errorHandler);
+			transaction.executeSql('CREATE TABLE IF NOT EXISTS news(news_id INTEGER NOT NULL PRIMARY KEY, city INTEGER NOT NULL, emergencyType TEXT NOT NULL, description TEXT NOT NULL, latitude TEXT, longitude TEXT, insertTime DATETIME);', [], nullDataHandler, errorHandler);
         }
     );
 	
@@ -139,20 +145,38 @@ function getUserLocation(){
 				var city = "";
 				var state = ""; //TODO try adding country 
 				var country = "";
+				var street = "";
+				var address = result.formatted_address;
+				console.log("Address : " + address);
+				
+				
+				
 				for(var i=0, len=result.address_components.length; i<len; i++) {
 					var ac = result.address_components[i];
 					if(ac.types.indexOf("locality") >= 0) city = ac.long_name;
 					if(ac.types.indexOf("administrative_area_level_1") >= 0) state = ac.long_name;
 					if(ac.types.indexOf("country") >= 0) country = ac.long_name;
+					
+					if(ac.types.indexOf("street_address") >= 0) street = ac.long_name;
 				}
-				
+									
 				console.log("Setting user location...");
 				userCity = city;
 				console.log("Inside get User location: User loc is " + userCity);
 				//only report if we got Good Stuff
-				if(city != '' && state != '' && country != '') {
-					$("#currentLocation").html("<h4>Your location is "+city+", "+state+ ", " + country + "!</h4>");
+				
+				if(address == null && address == ''){
+					if(street!= '' && city != '' && state != '' && country != '') {
+						$("#currentLocation").html("<h4>Your location is "+ street + ", "+city+", "+state+ ", " + country + "!</h4>");
+					}
+					else if(city != '' && state != '' && country != '') {
+						$("#currentLocation").html("<h4>Your location is "+city+", "+state+ ", " + country + "!</h4>");
+					}			
 				}
+				else{
+					$("#currentLocation").html("<h4>Your location is " + address + "!</h4>");
+				}
+				
 		} 
 	});
 
@@ -180,22 +204,22 @@ function populateNews(){
 			    function (transaction) {
 				
 				var data = [
-							['1','Hyattsville', 'Theft', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
-							['2','Hyattsville', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
-							['3','Hyattsville', 'Medical', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
-							['4','Hyattsville', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
-							['5','Dallas', 'Theft', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
-							['6','Dallas', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
-							['7','Dallas', 'Medical', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
-							['8','Dallas', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
-							['9','Chennai', 'Theft', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
-							['10','Frederick', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
-							['11','Frederick', 'Medical', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
-							['12','Frederick', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text'],
+							['1','Hyattsville', 'Theft', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '38.9528572', '-76.95194594'],
+							['2','Hyattsville', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '38.953241', '-76.94656007'],
+							['3','Hyattsville', 'Medical', 'Some text some text Some text some text Some text some text Some text some text Some text some text' , '38.95831359', '-76.94364182'],
+							['4','Hyattsville', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text' , '38.9606829', '-76.95467107'],
+							['5','Dallas', 'Theft', 'Some text some text Some text some text Some text some text Some text some text Some text some text' , '32.78052496', '-96.79033602'],
+							['6','Dallas', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text' , '32.78290628', '-96.80136527'],
+							['7','Dallas', 'Medical', 'Some text some text Some text some text Some text some text Some text some text Some text some text' , '32.78586481', '-96.78739632'],
+							['8','Dallas', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text' , '32.78713021', '-96.80155635'],
+							['9','Chennai', 'Theft', 'Some text some text Some text some text Some text some text Some text some text Some text some text',  '13.0828056', '80.27498848'],
+							['10','Frederick', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text',  '39.41292138', '-77.40676045'],
+							['11','Frederick', 'Medical', 'Some text some text Some text some text Some text some text Some text some text Some text some text',  '39.41806037', '-77.40637422'],
+							['12','Frederick', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '39.4218895', '-77.42781043'],
 							];  
 				
 					for(var i= 0 ; i < 12; i++){
-							transaction.executeSql("INSERT INTO news(news_id, city, emergencyType, description) VALUES (?, ?, ?, ?)", [data[i][0], data[i][1], data[i][2], data[i][3],], errorHandler);
+							transaction.executeSql("INSERT INTO news(news_id, city, emergencyType, description,  latitude, longitude, insertTime) VALUES (?, ?, ?, ?, ?, ?, ?)", [data[i][0], data[i][1], data[i][2], data[i][3], data[i][4], data[i][5], new Date() ], errorHandler);
 						}
 				}
 			);
@@ -203,15 +227,19 @@ function populateNews(){
 
 function insertNews(){
 
+var dateTime = new Date();
+
+console.log("Date time : " + dateTime);
+
 DEMODB.transaction(
 				
 			    function (transaction) {
 				console.log('Lattt: ' + eventLat + 'Longi: ' + eventLong);
 							if(eventLat == '' && eventLong == ''){
-								transaction.executeSql("INSERT INTO news(city, emergencyType, description) VALUES (?, ?, ?)", [userCity, emergencyType, description], errorHandler);
+								transaction.executeSql("INSERT INTO news(city, emergencyType, description, insertTime) VALUES (?, ?, ?, ?)", [userCity, emergencyType, description, dateTime], errorHandler);
 							}
 							else{
-								transaction.executeSql("INSERT INTO news(city, emergencyType, description, latitude, longitude) VALUES (?, ?, ?, ?, ?)", [userCity, emergencyType, description, eventLat, eventLong], errorHandler);
+								transaction.executeSql("INSERT INTO news(city, emergencyType, description, latitude, longitude, insertTime) VALUES (?, ?, ?, ?, ?, ?)", [userCity, emergencyType, description, eventLat, eventLong, dateTime], errorHandler);
 							}
 							
 				}
@@ -280,17 +308,25 @@ function dataNewsSelectHandler( transaction, results ) {
 					
 					var divId = row['city']+row['news_id'];
 					var mapDivId = 'map'+row['news_id'];
-					
+					var time  = row['insertTime'];
+					if(time != null && time != ''){
+						time = time.split("GMT")[0].trim();
+					}
+					console.log("Time::: " + time);
 					var subDesc = row['description'].substring(0,10)+ ' .....';
-					newsContent = "<div id='" + divId + "' data-role='collapsible' data-collapsed='true' data-iconpos='right'><h4> <img src='images/new.gif' alt='new'/>" + '  '+ subDesc + "</h4> " + 'Type of emergency: ' + row['emergencyType']  + "<p>" + row['description'] + "</p><div class= 'newsMapDiv' id='"+mapDivId+"'></div></div>";
 					
-					//console.log('News content: ' + newsContent);
+					var imageFile =  row['emergencyType'].toLowerCase() + '.png';
+					
+					
+					newsContent = "<div id='" + divId + "' data-role='collapsible' data-collapsed='true' data-iconpos='right'><h4><img src='images/"+imageFile+"' alt='icon' width='20' height='20'/>" + '  '+ subDesc + " <img src='images/new.gif' alt='new'/></h4>" + '<b>Incident Type:</b> ' + row['emergencyType']  + "<p><b>Description:</b>" + row['description'] + "</p><div class= 'newsMapDiv' id='"+mapDivId+"'></div><p><b>News updated at:</b> "+ time +"</p></div>";
+					
+					
 					
 					$("#set").append( newsContent ).collapsibleset('refresh');
 					
 					console.log('Laaaaatttt :' + row['latitude'] + ' longggiiii : ' + row['longitude'] );
 					
-					if(row['latitude'] != null && row['latitude'] != ''){
+					if(row['latitude'] != null && row['latitude'] != ''){ // TODO -- Map loading only on resize. 
 						console.log("Latitude and longitude is not null :" + row['latitude']);
 						var latitude = row['latitude'];
 						var longitude = row['longitude'];
@@ -311,8 +347,7 @@ function dataNewsSelectHandler( transaction, results ) {
 
 function addNewsIntoDB(){
 	
-	eventLat = '';
-	eventLong = '';
+	
 	console.log("Notifying event....");
 	 $("input[name=radio-choice]:checked").each(function() {
         emergencyType = $(this).val();
@@ -429,29 +464,35 @@ function dataCityCountSelectHandler( transaction, results ){
 			cityMap=[];
 			
 			console.log("Total rows: " + results.rows.length);
-			
+			var coordArray = [][];
 		    for (i ; i<results.rows.length; i++) {
 		        
 		    	row = results.rows.item(i);
 		        
+				
 				if(cityMap[row['city']] == null || cityMap[row['city']] == 'undefined' ){
 					cityMap[row['city']] = 1;
+					
 				}
 				else{
 					cityMap[row['city']]+=1;
+					
 				}
 				
 				console.log("City ::" + row['city'] + " Count : " + cityMap[row['city']]);
-				
+			
 				
 				
 		    }	
+			
+			
+			
 			
 }
 
 function drawBarChart(chartDivId){
 
-	var barChart;
+	
 	console.log("Drawing chart... ");
 
 	var cityNames = [];
@@ -463,7 +504,8 @@ function drawBarChart(chartDivId){
 		cityNames.push(i);
 		cityCount.push(cityMap[i]);
 	}
-
+	
+	
 
 	if (barChart == null){
 					var data = {
@@ -488,19 +530,14 @@ function drawBarChart(chartDivId){
 
 
 function drawPieBarChart(){
-	
 	var emerTypeCount  = [];
 	for (var i in emergencyMap){
-			//console.log("Emergency Type : " + i);
 			emerTypeCount[i] = 0; 
-			//console.log("Emergency Map for each city: " + emergencyMap[i]);
 			for(var j in emergencyMap[i]){
-				//console.log("City : " + j);
-				//console.log("Count: " + emergencyMap[i][j]);
 				emerTypeCount[i] += emergencyMap[i][j];
 			}
-			//console.log("----");
 		}
+	
 	console.log("Final count map  : : Theft :  "  + emerTypeCount['Other'] + ' Medical: ' +  emerTypeCount['Fire']);
 	var pieData = [
 				   { value: checkNull(emerTypeCount['Medical']), label: 'Medical', color:  getRandomColor() },
@@ -508,14 +545,7 @@ function drawPieBarChart(){
 				   { value: checkNull(emerTypeCount['Theft']), label: 'Theft', color:  getRandomColor() },
 				   { value : checkNull(emerTypeCount['Other']), label: 'Other', color:  getRandomColor() }
 				 ];
-	/*
-		var pieData = [
-				   { value: checkNull(emerTypeCount['Medical']), label: 'Medical', color: '#811BD6' },
-				   { value: checkNull(emerTypeCount['Fire']), label: 'Fire', color: '#9CBABA' },
-				   { value: checkNull(emerTypeCount['Theft']), label: 'Theft', color: '#D18177'},
-				   { value : checkNull(emerTypeCount['Other']), label: 'Other', color: '#6AE128'}
-				 ];
-	*/	
+	
 				 
 	var context = document.getElementById('emergencyTrendPieChart').getContext('2d');
 	pieChart = new Chart(context).Doughnut(pieData);
@@ -526,8 +556,6 @@ function drawPieBarChart(){
 	var cityNames = [];
 	var cityCount = [];
 
-	console.log("CITY MAP:::::: " + cityMap);
-	
 	for (var i in cityMap){
 		cityNames.push(i);
 		cityCount.push(cityMap[i]);
@@ -611,4 +639,62 @@ function getRandomColor() {
         color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
+}
+
+
+var locations = [
+  ['Bondi Beach', -33.890542, 151.274856, 4],
+  ['Coogee Beach', -33.923036, 151.259052, 5],
+  ['Cronulla Beach', -34.028249, 151.157507, 3],
+  ['Manly Beach', -33.80010128657071, 151.28747820854187, 2],
+  ['Maroubra Beach', -33.950198, 151.259302, 1]
+];
+var map;
+var markers = [];
+
+function drawMapViz(cityName){
+
+  var locations = getLocationForCity(cityName);
+  map = new google.maps.Map(document.getElementById('map_markers'), {
+    zoom: 10,
+    center: new google.maps.LatLng(-33.92, 151.25),
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  });
+
+  var num_markers = locations.length;
+  for (var i = 0; i < num_markers; i++) {  
+    markers[i] = new google.maps.Marker({
+      position: {lat:locations[i][1], lng:locations[i][2]},
+      map: map,
+      html: locations[i][0],
+      id: i,
+    });
+      
+    google.maps.event.addListener(markers[i], 'click', function(){
+      var infowindow = new google.maps.InfoWindow({
+        id: this.id,
+        content:this.html,
+        position:this.getPosition()
+      });
+      google.maps.event.addListenerOnce(infowindow, 'closeclick', function(){
+        markers[this.id].setVisible(true);
+      });
+      this.setVisible(false);
+      infowindow.open(map);
+    });
+  }
+}
+
+function updateMapMarkers(e){
+	console.log("Clicking the bar chart");
+	console.log("Segments : " + barChart.getBarsAtEvent(e)[0].label);
+	var cityNAME = barChart.getBarsAtEvent(e)[0].label;
+	drawMapViz(cityNAME);
+}
+
+
+function getLocationForCity(cityName){
+	
+	
+	
 }

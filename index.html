@@ -62,6 +62,7 @@
 	
 	$(document).on( "pageshow", "#cityTrendChartPage", function() {
 			drawBarChart("cityTrendChart");
+			drawMapViz();
 	});
 	  
 	$(document).on( "pagebeforeshow", "#emergencyTrendChartPage", function() {
@@ -76,7 +77,9 @@
 	$(document).on("click", "#emergencyTrendPieChart", function (e){
 		updateBarChart(e);
 	});
-	  
+	  $(document).on("click", "#cityTrendChart", function (e){
+		updateMapMarkers(e);
+	});
 	</script>
 </head> 
 <body> 
@@ -96,7 +99,7 @@
 			</div>
 		</div>
 		<div data-role="main" class="ui-content">
-			<h1>Active news</h1>
+			<h1><img src="images/world1.gif" width='50' height='50'/>                     Active news</h1>
 			<div data-role="collapsible-set" data-content-theme="d" id="set"></div>
 			
 		</div>
@@ -136,11 +139,11 @@
 					<label for="radio-choice-4">Other</label>
 			</fieldset>
 				
-				<label for="textarea-a">Description:</label>
+			<label for="textarea-a">Description:</label>
 				<textarea name="textarea" id="description">
-				</textarea>
+			</textarea>
 				
-				<fieldset data-role="controlgroup" id="addrFieldSet">
+				<!--<fieldset data-role="controlgroup" id="addrFieldSet">
 					<legend>Do you want to enter the exact address:</legend>
 					<input type="radio" name="radio-choice-exactaddr" id="radio-addr-1" value="yes"  />
 					<label for="radio-addr-1">Yes</label>
@@ -155,15 +158,13 @@
 						<input type="text" name="address" id="address" value="" placeholder="Building number, street name  and city is needed"/>
 					</div>
 				</div>
+				-->
 				
-				
-				<a href="#popupInfodiv" id="notify_btn"  data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all ui-icon-check ui-btn-icon-left" onclick="return addNewsIntoDB();">Notify</a>
-				<div id ="popupInfodiv" data-role="popup" class="ui-content" style="min-width:250px;"> 
-						<h5>Thanks for your information. Concerned authorities will take immediate action. Once again thanks for your time.</h5>
-						<a href="#map-page" id="cancel_btn" class="ui-btn ui-btn-inline ui-corner-all ui-icon-check ui-btn-icon-left" >Close</a>
-				</div>
-				<!--<input type="button" value="Notify" id="notify_btn"  data-inline="true" data-role="button">-->
-				<!--<input type="button" value="LAt_Long" id="lat_long_btn">-->
+			<a href="#popupInfodiv" id="notify_btn"  data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all ui-icon-check ui-btn-icon-left" onclick="return addNewsIntoDB();">Notify</a>
+			<div id ="popupInfodiv" data-role="popup" class="ui-content" style="min-width:250px;"> 
+					<h5>Thanks for your information. Concerned authorities will take immediate action. Once again thanks for your time.</h5>
+					<a href="#map-page" id="cancel_btn" class="ui-btn ui-btn-inline ui-corner-all ui-icon-check ui-btn-icon-left" >Close</a> <!-- TODO send text msg or email -->
+			</div>
 				
 		</div>
 		<div data-role="footer" data-theme="b" data-position="fixed" data-hide-during-focus="" data-tap-toggle="false">
@@ -191,7 +192,7 @@
 				<ul data-role="listview" data-filter="false" data-inset="true" data-theme="c" data-divider-theme="b"> <!-- TODO Try adding data divider -->
 					<li><a href="#cityTrendChartPage" data-transition="pop">City Trend</a></li>
 					<li><a href="#emergencyTrendChartPage" data-transition="pop">Emergency Trend</a></li>
-					<li><a href="#bubbleChart" data-transition="pop">Bubble Viz.</a></li>
+					<li><a href="#map_viz_page" data-transition="pop">Maps</a></li>
 				</ul>
 			</div>
 			<div data-role="footer" data-theme="b" data-position="fixed" data-hide-during-focus="" data-tap-toggle="false">
@@ -265,7 +266,11 @@
 		<div data-role="main" class="ui-content">
 				<a href="#page2" data-transition="slide" data-role="button" data-inline="true">Back</a> <!-- TODO make it smaller -->
 				<h2 align="center">City Trends</h2>
-				<canvas id="cityTrendChart" height="300" width="300"></canvas>
+				<div align="center">
+					<canvas id="cityTrendChart" height="300" width="300"></canvas>
+					
+				</div>
+				<div id="map_markers"></div> 
 		</div>
 		<div data-role="footer" data-theme="b" data-position="fixed" data-hide-during-focus="" data-tap-toggle="false">
 			<h2>&copy; MIM Team 2014</h2>
@@ -298,6 +303,33 @@
 			<h2>&copy; MIM Team 2014</h2>
 		</div>	
 	</div>
+	
+		<div data-role="page" id="map_viz_page">
+		<div data-role="header" data-theme="b">
+			<h1><img src="images/logo1.png"/></h1>
+			<div data-role="navbar">
+				<ul>
+					<li><a href="#page1" data-icon="info">News Feed</a></li>
+					<li><a href="#map-page" data-icon="location">Notify</a></li>
+					<li><a href="#page2" data-icon="eye">Analytics</a></li>
+					<li><a href="#page3" data-icon="mail">Contact</a></li>
+					<li><a href="#page4" data-icon="user">User Profile</a></li>
+				</ul>
+			</div>
+		</div>
+		<div data-role="main" class="ui-content">
+				<a href="#page2" data-transition="slide" data-role="button" data-inline="true">Back</a> <!-- TODO make it smaller -->
+				<h2 align="center">Map Visualizations</h2>
+				<div align="center">
+					
+					
+				</div>
+		</div>
+		<div data-role="footer" data-theme="b" data-position="fixed" data-hide-during-focus="" data-tap-toggle="false">
+			<h2>&copy; MIM Team 2014</h2>
+		</div>	
+	</div>
+	
 	
 </body>
 </html>
