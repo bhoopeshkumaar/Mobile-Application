@@ -6,7 +6,8 @@ var eventLong = '';
 
 var cityMap = [];
 var emergencyMap = [];
-
+var pieChart;
+var subBarChart;
 function showMap(){
 	console.log('Showing map');
 	var divId = "map-canvas";
@@ -373,46 +374,43 @@ function emergencyCountSelectHandler( transaction, results ){
 	var i=0,
 	row;		
 	emergencyMap=[];
-	
-	console.log("Total rows: " + results.rows.length);
+	//console.log("Total rows: " + results.rows.length);
 	
 	  for (i ; i<results.rows.length; i++) {
 		    	row = results.rows.item(i);
 		        var ctyMap = [];
 				
-				console.log("emergencyMap[row['emergencyType']] :: " + emergencyMap[row['emergencyType']]);
+				//console.log("emergencyMap[row['emergencyType']] :: " + emergencyMap[row['emergencyType']]);
 				
 				if(emergencyMap[row['emergencyType']] != null && emergencyMap[row['emergencyType']] != 'undefined' ){
 					ctyMap = emergencyMap[row['emergencyType']] ;
 				}
 			
-				
 				console.log("ctyMap[row['city']]:: " + ctyMap[row['city']]);
 				
-				if(ctyMap[row['city']] == 'undefined' ){
+				if(ctyMap[row['city']] == null || ctyMap[row['city']] == 'undefined' ){
 						ctyMap[row['city']] = 1; 
 					}
 					else{
 						ctyMap[row['city']]+=1;
 					}
 					
-				console.log("City ::" + row['city'] + " Count : " + ctyMap[row['city']]);
+				//console.log("City ::" + row['city'] + " Count : " + ctyMap[row['city']]);
 				emergencyMap[row['emergencyType']] = ctyMap;
 		    }	
 			
 		
-		console.log("EMmergency Map:....... ");
+		//console.log("EMmergency Map:....... ");
 		
-		for (var i in emergencyMap){
-			console.log("Emergency Type : " + i);
-			console.log("Emergency Map for each city: " + emergencyMap[i]);
+		/*for (var i in emergencyMap){
+			//console.log("Emergency Type : " + i);
+			//console.log("Emergency Map for each city: " + emergencyMap[i]);
 			for(var j in emergencyMap[i]){
-				console.log("City : " + j);
-				
-				//console.log("Count: " + emergencyMap[i]);
+				//console.log("City : " + j);
+				//console.log("Count: " + emergencyMap[i][j]);
 			}
 			console.log("----");
-		}
+		}*/
 }
 
 function getCityDataCount(){
@@ -453,38 +451,164 @@ function dataCityCountSelectHandler( transaction, results ){
 
 function drawBarChart(chartDivId){
 
-var barChart;
-console.log("Drawing chart... ");
+	var barChart;
+	console.log("Drawing chart... ");
 
-var cityNames = [];
-var cityCount = [];
+	var cityNames = [];
+	var cityCount = [];
 
-console.log("CITY MAP:::::: " + cityMap);
+	console.log("CITY MAP:::::: " + cityMap);
 
-for (var i in cityMap){
-cityNames.push(i);
-cityCount.push(cityMap[i]);
+	for (var i in cityMap){
+		cityNames.push(i);
+		cityCount.push(cityMap[i]);
+	}
+
+
+	if (barChart == null){
+					var data = {
+						labels: cityNames,
+						datasets: [{
+							label: "No of Cases",
+							fillColor: "rgba(235, 105, 18,0.5)",
+							strokeColor: "rgba(235, 105, 18,0.8)",
+							highlightFill: "rgba(235, 105, 18,0.75)",
+							highlightStroke: "rgba(235, 105, 18,1)",
+							data:  cityCount
+						}]
+					};
+				
+					var ctx = document.getElementById(chartDivId).getContext("2d");
+				
+					window.barChart = new Chart(ctx).Bar(data, {
+						responsive: true // change to "false" and it will work
+					});
+				}           
 }
 
 
-if (barChart == null){
-				var data = {
-					labels: cityNames,
-					datasets: [{
-						label: "No of Cases",
-						fillColor: "rgba(235, 105, 18,0.5)",
-						strokeColor: "rgba(235, 105, 18,0.8)",
-						highlightFill: "rgba(235, 105, 18,0.75)",
-						highlightStroke: "rgba(235, 105, 18,1)",
-						data:  cityCount
-					}]
-				};
-			
-				var ctx = document.getElementById(chartDivId).getContext("2d");
-			
-				window.barChart = new Chart(ctx).Bar(data, {
-					responsive: true // change to "false" and it will work
-				});
-			}           
+function drawPieBarChart(){
+	
+	var emerTypeCount  = [];
+	for (var i in emergencyMap){
+			//console.log("Emergency Type : " + i);
+			emerTypeCount[i] = 0; 
+			//console.log("Emergency Map for each city: " + emergencyMap[i]);
+			for(var j in emergencyMap[i]){
+				//console.log("City : " + j);
+				//console.log("Count: " + emergencyMap[i][j]);
+				emerTypeCount[i] += emergencyMap[i][j];
+			}
+			//console.log("----");
+		}
+	console.log("Final count map  : : Theft :  "  + emerTypeCount['Other'] + ' Medical: ' +  emerTypeCount['Fire']);
+	var pieData = [
+				   { value: checkNull(emerTypeCount['Medical']), label: 'Medical', color:  getRandomColor() },
+				   { value: checkNull(emerTypeCount['Fire']), label: 'Fire', color:  getRandomColor() },
+				   { value: checkNull(emerTypeCount['Theft']), label: 'Theft', color:  getRandomColor() },
+				   { value : checkNull(emerTypeCount['Other']), label: 'Other', color:  getRandomColor() }
+				 ];
+	/*
+		var pieData = [
+				   { value: checkNull(emerTypeCount['Medical']), label: 'Medical', color: '#811BD6' },
+				   { value: checkNull(emerTypeCount['Fire']), label: 'Fire', color: '#9CBABA' },
+				   { value: checkNull(emerTypeCount['Theft']), label: 'Theft', color: '#D18177'},
+				   { value : checkNull(emerTypeCount['Other']), label: 'Other', color: '#6AE128'}
+				 ];
+	*/	
+				 
+	var context = document.getElementById('emergencyTrendPieChart').getContext('2d');
+	pieChart = new Chart(context).Doughnut(pieData);
+	
+	
+	console.log("Drawing chart... ");
 
+	var cityNames = [];
+	var cityCount = [];
+
+	console.log("CITY MAP:::::: " + cityMap);
+	
+	for (var i in cityMap){
+		cityNames.push(i);
+		cityCount.push(cityMap[i]);
+	}
+	
+	var barData = {
+						labels: getCityNames('Theft'),
+						datasets: [{
+							label: "No of Cases",
+							fillColor: "rgba(235, 105, 18,0.5)",
+							strokeColor: "rgba(235, 105, 18,0.8)",
+							highlightFill: "rgba(235, 105, 18,0.75)",
+							highlightStroke: "rgba(235, 105, 18,1)",
+							data:  getCityCount('Theft')
+						}]
+					};
+					
+					
+	var subcontext = document.getElementById('emergencyTrendBarChart').getContext('2d');
+	subBarChart = new Chart(subcontext).Bar(barData);
+
+}
+
+function getCityNames(emerType){
+	var cityNames = [];
+	for (var i in emergencyMap){
+			for(var j in emergencyMap[i]){
+				if(i == emerType){
+					cityNames.push(j);
+				}
+			}
+		}
+	return cityNames;
+}
+
+
+function getCityCount(emerType){
+	var cityCount = [];
+	for (var i in emergencyMap){
+			for(var j in emergencyMap[i]){
+				if(i == emerType){
+					cityCount.push(emergencyMap[i][j]);
+				}
+			}
+		}
+	return cityCount;
+}
+
+
+function checkNull(value){
+	if(value == null || value == 'undefined' || value == ''){
+		return 0;
+	}
+	return parseInt(value);
+}
+
+function updateBarChart(e){	
+	var activeSector = pieChart.getSegmentsAtEvent(e);
+
+	var barData = {
+						labels: getCityNames(activeSector[0].label),
+						datasets: [{
+							label: "No of Cases",
+							fillColor: "rgba(235, 105, 18,0.5)",
+							strokeColor: "rgba(235, 105, 18,0.8)",
+							highlightFill: "rgba(235, 105, 18,0.75)",
+							highlightStroke: "rgba(235, 105, 18,1)",
+							data:  getCityCount(activeSector[0].label)
+						}]
+					};
+					
+	var subcontext = document.getElementById('emergencyTrendBarChart').getContext('2d');
+	subBarChart = new Chart(subcontext).Bar(barData);				
+}
+
+
+function getRandomColor() {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
 }

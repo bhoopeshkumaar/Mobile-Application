@@ -65,13 +65,17 @@
 	});
 	  
 	$(document).on( "pagebeforeshow", "#emergencyTrendChartPage", function() {
+		getCityDataCount();
 		getEmergencyMap();
 	});
 	
 	$(document).on( "pageshow", "#emergencyTrendChartPage", function() {
-			drawBarChart("cityTrendChart");
+			drawPieBarChart();
 	});
 	    
+	$(document).on("click", "#emergencyTrendPieChart", function (e){
+		updateBarChart(e);
+	});
 	  
 	</script>
 </head> 
@@ -285,7 +289,10 @@
 		<div data-role="main" class="ui-content">
 				<a href="#page2" data-transition="slide" data-role="button" data-inline="true">Back</a> <!-- TODO make it smaller -->
 				<h2 align="center">Emergency Trends</h2>
-				<canvas id="emergencyTrendChart" height="300" width="300"></canvas>
+				<div align="center">
+					<canvas id="emergencyTrendPieChart" height="200" width="200" align="center"></canvas>
+					<canvas id="emergencyTrendBarChart" height="200" width="200" align="center"></canvas>
+				</div>
 		</div>
 		<div data-role="footer" data-theme="b" data-position="fixed" data-hide-during-focus="" data-tap-toggle="false">
 			<h2>&copy; MIM Team 2014</h2>
