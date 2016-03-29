@@ -10,7 +10,7 @@ var pieChart;
 var subBarChart;
 var barChart;
 
-var location = [];
+
 
 function showMap(){
 	console.log('Showing map');
@@ -464,7 +464,7 @@ function dataCityCountSelectHandler( transaction, results ){
 			cityMap=[];
 			
 			console.log("Total rows: " + results.rows.length);
-			var coordArray = [][];
+			
 		    for (i ; i<results.rows.length; i++) {
 		        
 		    	row = results.rows.item(i);
@@ -654,7 +654,7 @@ var markers = [];
 
 function drawMapViz(cityName){
 
-  var locations = getLocationForCity(cityName);
+  //var locations = getLocationForCity(cityName);
   map = new google.maps.Map(document.getElementById('map_markers'), {
     zoom: 10,
     center: new google.maps.LatLng(-33.92, 151.25),
@@ -689,7 +689,7 @@ function updateMapMarkers(e){
 	console.log("Clicking the bar chart");
 	console.log("Segments : " + barChart.getBarsAtEvent(e)[0].label);
 	var cityNAME = barChart.getBarsAtEvent(e)[0].label;
-	drawMapViz(cityNAME);
+	//drawMapViz(cityNAME);
 }
 
 
