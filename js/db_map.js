@@ -10,7 +10,7 @@ var pieChart;
 var subBarChart;
 var barChart;
 
-
+var locationArray = [];
 
 function showMap(){
 	console.log('Showing map');
@@ -245,7 +245,7 @@ DEMODB.transaction(
 				}
 			);
 
-	
+	$('#description').val('');
 }		
 		
 function selectUser() {
@@ -388,11 +388,9 @@ geocoder.geocode( { 'address': address}, function(results, status) {
 
 
 function reset(){
-		
+		console.log("Resetting");
+		$("#description").val('');
 		$("input[name='radio-choice']:first").attr("checked",true).checkboxradio("refresh");
-		$("input[name='radio-choice-exactaddr']").attr("checked",true).checkboxradio("refresh");
-		
-		$('#eventMap').hide();
 }
 
 
@@ -462,11 +460,11 @@ function dataCityCountSelectHandler( transaction, results ){
 				row;
 			
 			cityMap=[];
-			
+			locationArray = [];
 			console.log("Total rows: " + results.rows.length);
 			
 		    for (i ; i<results.rows.length; i++) {
-		        
+		        var eachRow = new Array();
 		    	row = results.rows.item(i);
 		        
 				
@@ -476,16 +474,20 @@ function dataCityCountSelectHandler( transaction, results ){
 				}
 				else{
 					cityMap[row['city']]+=1;
-					
 				}
 				
 				console.log("City ::" + row['city'] + " Count : " + cityMap[row['city']]);
 			
+				eachRow.push(row['city']); //0
+				eachRow.push(row['emergencyType']); //1
+				eachRow.push(row['description']); //2
+				eachRow.push(row['latitude']); //3
+				eachRow.push(row['longitude']); //4
 				
-				
+				locationArray.push(eachRow);
 		    }	
 			
-			
+		console.log("Location Array Length : " + locationArray.length); 	
 			
 			
 }
@@ -507,7 +509,7 @@ function drawBarChart(chartDivId){
 	
 	
 
-	if (barChart == null){
+	
 					var data = {
 						labels: cityNames,
 						datasets: [{
@@ -525,7 +527,10 @@ function drawBarChart(chartDivId){
 					window.barChart = new Chart(ctx).Bar(data, {
 						responsive: true // change to "false" and it will work
 					});
-				}           
+				   
+	
+	drawMapViz(locationArray[0][0]);
+				
 }
 
 
@@ -549,7 +554,6 @@ function drawPieBarChart(){
 				 
 	var context = document.getElementById('emergencyTrendPieChart').getContext('2d');
 	pieChart = new Chart(context).Doughnut(pieData);
-	
 	
 	console.log("Drawing chart... ");
 
@@ -641,32 +645,29 @@ function getRandomColor() {
     return color;
 }
 
-
-var locations = [
-  ['Bondi Beach', -33.890542, 151.274856, 4],
-  ['Coogee Beach', -33.923036, 151.259052, 5],
-  ['Cronulla Beach', -34.028249, 151.157507, 3],
-  ['Manly Beach', -33.80010128657071, 151.28747820854187, 2],
-  ['Maroubra Beach', -33.950198, 151.259302, 1]
-];
 var map;
 var markers = [];
 
 function drawMapViz(cityName){
-
-  //var locations = getLocationForCity(cityName);
+  var locations = getLocationForCity(cityName);
   map = new google.maps.Map(document.getElementById('map_markers'), {
-    zoom: 10,
-    center: new google.maps.LatLng(-33.92, 151.25),
+    zoom: 12,
+    center: new google.maps.LatLng(parseFloat(locations[0][3].trim()), parseFloat(locations[0][4].trim())),
     mapTypeId: google.maps.MapTypeId.ROADMAP
   });
 
   var num_markers = locations.length;
+  console.log("Num markers: " + num_markers);
   for (var i = 0; i < num_markers; i++) {  
+	
+	console.log("Lat : '" + locations[i][3].trim() + "' Long : '" + locations[i][4].trim() + "'");
+	
+	//TODO - try to include marker images
+	
     markers[i] = new google.maps.Marker({
-      position: {lat:locations[i][1], lng:locations[i][2]},
+      position: {lat:parseFloat(locations[i][3].trim()), lng:parseFloat(locations[i][4].trim())},
       map: map,
-      html: locations[i][0],
+      html: "<img src='images/"+locations[i][1].toLowerCase()+".png' width='20' height='20' alt='icon'/>&nbsp;&nbsp;&nbsp<b>"+locations[i][1]+"</b><p>"+locations[i][2]+"</p>",
       id: i,
     });
       
@@ -689,12 +690,23 @@ function updateMapMarkers(e){
 	console.log("Clicking the bar chart");
 	console.log("Segments : " + barChart.getBarsAtEvent(e)[0].label);
 	var cityNAME = barChart.getBarsAtEvent(e)[0].label;
-	//drawMapViz(cityNAME);
+	drawMapViz(cityNAME);
 }
 
 
 function getLocationForCity(cityName){
+	var locations = [];
+	if(locationArray == null || locationArray.length == 0){
+		return locations;
+	}
 	
+	for(var i = 0 ; i < locationArray.length; i++){
+		tempArray = locationArray[i];
+		if(tempArray[0] == cityName){
+			console.log("Temp Array :" + tempArray);
+			locations.push(tempArray);
+		}
+	}
 	
-	
+	return locations;
 }

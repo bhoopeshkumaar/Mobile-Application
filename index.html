@@ -22,7 +22,6 @@
 	
 	$( document ).on( "pagebeforeshow", "#map-page", function() {
 		reset();
-		$('#eventMap').hide();
 	});
 	
 	$( document ).on( "pageshow", "#map-page", function() {
@@ -62,7 +61,6 @@
 	
 	$(document).on( "pageshow", "#cityTrendChartPage", function() {
 			drawBarChart("cityTrendChart");
-			drawMapViz();
 	});
 	  
 	$(document).on( "pagebeforeshow", "#emergencyTrendChartPage", function() {
@@ -121,6 +119,7 @@
 				</ul>
 			</div>
 		</div>
+		
 		<div role="main" class="ui-content" id="map-canvas" align="center"></div><!--Map loads here-->
 		<div id="currentLocation"></div>
 		<div id="notifyform">
@@ -190,8 +189,8 @@
 			<div data-role="content" id = "chart">
 				<h1>Analytics</h1>
 				<ul data-role="listview" data-filter="false" data-inset="true" data-theme="c" data-divider-theme="b"> <!-- TODO Try adding data divider -->
-					<li><a href="#cityTrendChartPage" data-transition="pop">City Trend</a></li>
-					<li><a href="#emergencyTrendChartPage" data-transition="pop">Emergency Trend</a></li>
+					<li><a href="#cityTrendChartPage" data-transition="pop"><img src="images/bar_chart.png" class="ui-li-icon"/>City Trend</a></li>
+					<li><a href="#emergencyTrendChartPage" data-transition="pop"><img src="images/doughnut.png" class="ui-li-icon" />Emergency Trend</a></li>
 					<li><a href="#map_viz_page" data-transition="pop">Maps</a></li>
 				</ul>
 			</div>
@@ -266,11 +265,14 @@
 		<div data-role="main" class="ui-content">
 				<a href="#page2" data-transition="slide" data-role="button" data-inline="true">Back</a> <!-- TODO make it smaller -->
 				<h2 align="center">City Trends</h2>
+				 
 				<div align="center">
-					<canvas id="cityTrendChart" height="300" width="300"></canvas>
-					
+					<h5>Following bar chart shows number of incidents in each of the cities</h5>
+					<canvas id="cityTrendChart" height="100" width="100"></canvas>
+					<h5>Click on each bar to check the incidents on the map.</h5>
+					<div id="map_markers"></div>
 				</div>
-				<div id="map_markers"></div> 
+				
 		</div>
 		<div data-role="footer" data-theme="b" data-position="fixed" data-hide-during-focus="" data-tap-toggle="false">
 			<h2>&copy; MIM Team 2014</h2>
@@ -295,7 +297,9 @@
 				<a href="#page2" data-transition="slide" data-role="button" data-inline="true">Back</a> <!-- TODO make it smaller -->
 				<h2 align="center">Emergency Trends</h2>
 				<div align="center">
+					<h5>Doughnut distribution of different incident types</h5>
 					<canvas id="emergencyTrendPieChart" height="200" width="200" align="center"></canvas>
+					<h5>Click on each segment in the doughnut to show corresponding city distribution</h5>
 					<canvas id="emergencyTrendBarChart" height="200" width="200" align="center"></canvas>
 				</div>
 		</div>
