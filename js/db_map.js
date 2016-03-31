@@ -13,7 +13,7 @@ var barChart;
 var locationArray = [];
 
 function showMap(){
-	console.log('Showing map');
+	//console.log('Showing map');
 	var divId = "map-canvas";
 	var defaultLatLng = new google.maps.LatLng(34.0983425, -118.3267434);  // Default to Hollywood, CA when no geolocation support
     if ( navigator.geolocation ) {
@@ -35,7 +35,7 @@ function showMap(){
 }
 
 function drawMap(latlng, divId) {
-		console.log('Lat Long:' + latlng);
+		//console.log('Lat Long:' + latlng);
         var myOptions = {
             zoom: 10,
             center: latlng,
@@ -59,7 +59,7 @@ function drawMap(latlng, divId) {
 	}
 
 function initDatabase() {
-	console.log("into init database");
+	//console.log("into init database");
 	
 	try {
 		if (!window.openDatabase) {
@@ -94,7 +94,7 @@ function dropTables() {
 					transaction.executeSql("DROP TABLE news;", [], nullDataHandler, errorHandler);
 			    }
 			);
-			console.log("Tables has been dropped.");
+			//console.log("Tables has been dropped.");
 			//location.reload();			
 }
 
@@ -113,7 +113,7 @@ function errorHandler( transaction, error ) {
 		 	} 
 			else {
 		    	// Error is a human-readable string.
-			    console.log('Oops.  Error was '+error.message+' (Code '+ error.code +')');
+			    //console.log('Oops.  Error was '+error.message+' (Code '+ error.code +')');
 		 	}
 		    return false;		    
 	    }
@@ -140,14 +140,14 @@ function getUserLocation(){
 	geocoder.geocode({'latLng': latlng}, function(results, status) {
 	if (status == google.maps.GeocoderStatus.OK) {
 				var result = results[0];
-				console.log('Results: ' + result);
+				//console.log('Results: ' + result);
 				//look for locality tag and administrative_area_level_1, country
 				var city = "";
 				var state = ""; //TODO try adding country 
 				var country = "";
 				var street = "";
 				var address = result.formatted_address;
-				console.log("Address : " + address);
+				//console.log("Address : " + address);
 				
 				
 				
@@ -160,9 +160,9 @@ function getUserLocation(){
 					if(ac.types.indexOf("street_address") >= 0) street = ac.long_name;
 				}
 									
-				console.log("Setting user location...");
+				//console.log("Setting user location...");
 				userCity = city;
-				console.log("Inside get User location: User loc is " + userCity);
+				//console.log("Inside get User location: User loc is " + userCity);
 				//only report if we got Good Stuff
 				
 				if(address == null && address == ''){
@@ -185,7 +185,7 @@ function getUserLocation(){
 
 function populate() {
 			
-			console.log("Pre populate");
+			//console.log("Pre populate");
 			
 			DEMODB.transaction(
 			    function (transaction) {
@@ -229,12 +229,12 @@ function insertNews(){
 
 var dateTime = new Date();
 
-console.log("Date time : " + dateTime);
+//console.log("Date time : " + dateTime);
 
 DEMODB.transaction(
 				
 			    function (transaction) {
-				console.log('Lattt: ' + eventLat + 'Longi: ' + eventLong);
+				//console.log('Lattt: ' + eventLat + 'Longi: ' + eventLong);
 							if(eventLat == '' && eventLong == ''){
 								transaction.executeSql("INSERT INTO news(city, emergencyType, description, insertTime) VALUES (?, ?, ?, ?)", [userCity, emergencyType, description, dateTime], errorHandler);
 							}
@@ -277,7 +277,7 @@ function dataUserSelectHandler( transaction, results ) {
 		        
 		    	row = results.rows.item(i);
 		        
-				console.log("User name ::" + row['user_name']);
+				//console.log("User name ::" + row['user_name']);
 				
 				userName = row['user_name'];
 				
@@ -289,12 +289,12 @@ function dataUserSelectHandler( transaction, results ) {
 		
 function dataNewsSelectHandler( transaction, results ) {
 
-			console.log("Inside dataNewsSelectHandler. city name:  " + userCity);
+			//console.log("Inside dataNewsSelectHandler. city name:  " + userCity);
 			// Handle the results
 			var i=0,
 				row;
 			var newsContent = '';
-			console.log('Num of rows: ' + results.rows.length);	
+			//console.log('Num of rows: ' + results.rows.length);	
 			
 			$("#set").empty();
 			
@@ -304,7 +304,7 @@ function dataNewsSelectHandler( transaction, results ) {
 			else{
 				for (i ; i<results.rows.length; i++) {
 					row = results.rows.item(i);
-					console.log('Div id : '  + row['city']+row['news_id'] );
+					//console.log('Div id : '  + row['city']+row['news_id'] );
 					
 					var divId = row['city']+row['news_id'];
 					var mapDivId = 'map'+row['news_id'];
@@ -312,7 +312,7 @@ function dataNewsSelectHandler( transaction, results ) {
 					if(time != null && time != ''){
 						time = time.split("GMT")[0].trim();
 					}
-					console.log("Time::: " + time);
+					//console.log("Time::: " + time);
 					var subDesc = row['description'].substring(0,10)+ ' .....';
 					
 					var imageFile =  row['emergencyType'].toLowerCase() + '.png';
@@ -324,18 +324,18 @@ function dataNewsSelectHandler( transaction, results ) {
 					
 					$("#set").append( newsContent ).collapsibleset('refresh');
 					
-					console.log('Laaaaatttt :' + row['latitude'] + ' longggiiii : ' + row['longitude'] );
+					//console.log('Laaaaatttt :' + row['latitude'] + ' longggiiii : ' + row['longitude'] );
 					
 					if(row['latitude'] != null && row['latitude'] != ''){ // TODO -- Map loading only on resize. 
-						console.log("Latitude and longitude is not null :" + row['latitude']);
+						//console.log("Latitude and longitude is not null :" + row['latitude']);
 						var latitude = row['latitude'];
 						var longitude = row['longitude'];
 						var latLong = new google.maps.LatLng(parseFloat(latitude), parseFloat(longitude));
-						console.log("Drawing new map in each of the collapsible. lat long: " + latLong);
+						//console.log("Drawing new map in each of the collapsible. lat long: " + latLong);
 						drawMap(latLong, mapDivId);
 					}
 					else{
-						console.log("No co-ordinates information..");
+						//console.log("No co-ordinates information..");
 						$('#'+mapDivId).html('No information on the location co-ordinates.');
 					}
 				}	
@@ -348,14 +348,14 @@ function dataNewsSelectHandler( transaction, results ) {
 function addNewsIntoDB(){
 	
 	
-	console.log("Notifying event....");
+	//console.log("Notifying event....");
 	 $("input[name=radio-choice]:checked").each(function() {
         emergencyType = $(this).val();
     });
 	
 	description = $('#description').val().trim();
 	
-	console.log("Emergency Type: " + emergencyType + " Desc :" + description + ' User city : ' + userCity);
+	//console.log("Emergency Type: " + emergencyType + " Desc :" + description + ' User city : ' + userCity);
 	
 	$("input[name=radio-choice-exactaddr]:checked").each(function() {
         if($(this).val() == 'yes'){
@@ -372,14 +372,14 @@ function addNewsIntoDB(){
 
 function getLatLongForLocation(address){
 
-console.log("Address getting lat longggg .... " + address);
+//console.log("Address getting lat longggg .... " + address);
 var geocoder = new google.maps.Geocoder();
 geocoder.geocode( { 'address': address}, function(results, status) {
 
   if (status == google.maps.GeocoderStatus.OK) {
     var latitude = results[0].geometry.location.lat();
     var longitude = results[0].geometry.location.lng();
-    console.log(latitude + " "  +  longitude);
+    //console.log(latitude + " "  +  longitude);
 	eventLat = latitude;
 	eventLong = longitude;
   } 
@@ -388,7 +388,7 @@ geocoder.geocode( { 'address': address}, function(results, status) {
 
 
 function reset(){
-		console.log("Resetting");
+		//console.log("Resetting");
 		$("#description").val('');
 		$("input[name='radio-choice']:first").attr("checked",true).checkboxradio("refresh");
 }
@@ -419,7 +419,7 @@ function emergencyCountSelectHandler( transaction, results ){
 					ctyMap = emergencyMap[row['emergencyType']] ;
 				}
 			
-				console.log("ctyMap[row['city']]:: " + ctyMap[row['city']]);
+				//console.log("ctyMap[row['city']]:: " + ctyMap[row['city']]);
 				
 				if(ctyMap[row['city']] == null || ctyMap[row['city']] == 'undefined' ){
 						ctyMap[row['city']] = 1; 
@@ -461,7 +461,7 @@ function dataCityCountSelectHandler( transaction, results ){
 			
 			cityMap=[];
 			locationArray = [];
-			console.log("Total rows: " + results.rows.length);
+			//console.log("Total rows: " + results.rows.length);
 			
 		    for (i ; i<results.rows.length; i++) {
 		        var eachRow = new Array();
@@ -476,7 +476,7 @@ function dataCityCountSelectHandler( transaction, results ){
 					cityMap[row['city']]+=1;
 				}
 				
-				console.log("City ::" + row['city'] + " Count : " + cityMap[row['city']]);
+				//console.log("City ::" + row['city'] + " Count : " + cityMap[row['city']]);
 			
 				eachRow.push(row['city']); //0
 				eachRow.push(row['emergencyType']); //1
@@ -487,7 +487,7 @@ function dataCityCountSelectHandler( transaction, results ){
 				locationArray.push(eachRow);
 		    }	
 			
-		console.log("Location Array Length : " + locationArray.length); 	
+		//console.log("Location Array Length : " + locationArray.length); 	
 			
 			
 }
@@ -495,12 +495,12 @@ function dataCityCountSelectHandler( transaction, results ){
 function drawBarChart(chartDivId){
 
 	
-	console.log("Drawing chart... ");
+	//console.log("Drawing chart... ");
 
 	var cityNames = [];
 	var cityCount = [];
 
-	console.log("CITY MAP:::::: " + cityMap);
+	//console.log("CITY MAP:::::: " + cityMap);
 
 	for (var i in cityMap){
 		cityNames.push(i);
@@ -543,7 +543,7 @@ function drawPieBarChart(){
 			}
 		}
 	
-	console.log("Final count map  : : Theft :  "  + emerTypeCount['Other'] + ' Medical: ' +  emerTypeCount['Fire']);
+	//console.log("Final count map  : : Theft :  "  + emerTypeCount['Other'] + ' Medical: ' +  emerTypeCount['Fire']);
 	var pieData = [
 				   { value: checkNull(emerTypeCount['Medical']), label: 'Medical', color:  getRandomColor() },
 				   { value: checkNull(emerTypeCount['Fire']), label: 'Fire', color:  getRandomColor() },
@@ -555,7 +555,7 @@ function drawPieBarChart(){
 	var context = document.getElementById('emergencyTrendPieChart').getContext('2d');
 	pieChart = new Chart(context).Doughnut(pieData);
 	
-	console.log("Drawing chart... ");
+	//console.log("Drawing chart... ");
 
 	var cityNames = [];
 	var cityCount = [];
@@ -657,17 +657,17 @@ function drawMapViz(cityName){
   });
 
   var num_markers = locations.length;
-  console.log("Num markers: " + num_markers);
+  //console.log("Num markers: " + num_markers);
   for (var i = 0; i < num_markers; i++) {  
 	
-	console.log("Lat : '" + locations[i][3].trim() + "' Long : '" + locations[i][4].trim() + "'");
+	//console.log("Lat : '" + locations[i][3].trim() + "' Long : '" + locations[i][4].trim() + "'");
 	
 	//TODO - try to include marker images
 	
     markers[i] = new google.maps.Marker({
       position: {lat:parseFloat(locations[i][3].trim()), lng:parseFloat(locations[i][4].trim())},
       map: map,
-      html: "<img src='images/"+locations[i][1].toLowerCase()+".png' width='20' height='20' alt='icon'/>&nbsp;&nbsp;&nbsp<b>"+locations[i][1]+"</b><p>"+locations[i][2]+"</p>",
+      html: "<img src='images/"+locations[i][1].toLowerCase()+".png' width='20' height='20' alt='icon'/><b>"+locations[i][1]+"</b><p>"+locations[i][2]+"</p>",
       id: i,
     });
       
@@ -687,8 +687,8 @@ function drawMapViz(cityName){
 }
 
 function updateMapMarkers(e){
-	console.log("Clicking the bar chart");
-	console.log("Segments : " + barChart.getBarsAtEvent(e)[0].label);
+	//console.log("Clicking the bar chart");
+	//console.log("Segments : " + barChart.getBarsAtEvent(e)[0].label);
 	var cityNAME = barChart.getBarsAtEvent(e)[0].label;
 	drawMapViz(cityNAME);
 }
@@ -703,10 +703,61 @@ function getLocationForCity(cityName){
 	for(var i = 0 ; i < locationArray.length; i++){
 		tempArray = locationArray[i];
 		if(tempArray[0] == cityName){
-			console.log("Temp Array :" + tempArray);
+			//console.log("Temp Array :" + tempArray);
 			locations.push(tempArray);
 		}
 	}
 	
 	return locations;
+}
+
+
+function showMapOverlay(){
+ 
+ console.log("Preparing map visualizations");
+ 
+ var citymap = {
+        chicago: {
+          center: {lat: 41.878, lng: -87.629},
+          population: 2714856
+        },
+        newyork: {
+          center: {lat: 40.714, lng: -74.005},
+          population: 8405837
+        },
+        losangeles: {
+          center: {lat: 34.052, lng: -118.243},
+          population: 3857799
+        },
+        vancouver: {
+          center: {lat: 49.25, lng: -123.1},
+          population: 603502
+        }
+      };
+
+	   var map = new google.maps.Map(document.getElementById('map_overlay'), {
+          zoom: 3,
+          center: {lat: 37.090, lng: -95.712},
+          mapTypeId: google.maps.MapTypeId.TERRAIN
+        });
+	
+		console.log("Map obj: " + map);
+        // Construct the circle for each value in citymap.
+        // Note: We scale the area of the circle based on the population.
+        for (var city in citymap) {
+          // Add the circle for this city to the map.
+          var cityCircle = new google.maps.Circle({
+            strokeColor: '#FF0000',
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: '#FF0000',
+            fillOpacity: 0.35,
+            map: map,
+            center: citymap[city].center,
+            radius: Math.sqrt(citymap[city].population) * 100
+          });
+		  
+		  console.log("City circle: " + cityCircle);
+        }
+	  
 }
