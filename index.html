@@ -32,7 +32,7 @@
 	
 	$( document ).on( "pageinit", "#page1", function() {
 		initDatabase();
-		getUserLocation();
+		//getUserLocation();
 	});
 	
 	$( document ).on( "pagebeforeshow", "#page1", function() {
@@ -318,7 +318,8 @@
 		</div>
 		<div data-role="main" class="ui-content">
 				<a href="#page2" data-transition="slide" data-role="button" data-inline="true">Back</a> <!-- TODO make it smaller -->
-				<h2 align="center">Map Visualization</h2>
+				<h2 align="center">Map Viz.</h2>
+				<h5>The map shows the geographical distribution of the incidents. Click on circles to know more about the area.</h5>
 				
 				<div id="map_overlay"></div>
 				
