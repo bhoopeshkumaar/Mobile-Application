@@ -11,7 +11,7 @@ var subBarChart;
 var barChart;
 
 var locationArray = [];
-
+var cityData = {};
 function showMap(){
 	//console.log('Showing map');
 	var divId = "map-canvas";
@@ -70,7 +70,7 @@ function initDatabase() {
 			var displayName = 'Database for Vigil Mobile application';
 			var maxSize = 100000; //  bytes
 			DEMODB = openDatabase(shortName, version, displayName, maxSize);
-			dropTables();
+			//dropTables();
 			createTables();
 			
 		}
@@ -372,14 +372,14 @@ function addNewsIntoDB(){
 
 function getLatLongForLocation(address){
 
-//console.log("Address getting lat longggg .... " + address);
+console.log("Address getting lat longggg .... " + address);
 var geocoder = new google.maps.Geocoder();
 geocoder.geocode( { 'address': address}, function(results, status) {
 
   if (status == google.maps.GeocoderStatus.OK) {
     var latitude = results[0].geometry.location.lat();
     var longitude = results[0].geometry.location.lng();
-    //console.log(latitude + " "  +  longitude);
+    console.log(latitude + " "  +  longitude);
 	eventLat = latitude;
 	eventLong = longitude;
   } 
@@ -507,9 +507,6 @@ function drawBarChart(chartDivId){
 		cityCount.push(cityMap[i]);
 	}
 	
-	
-
-	
 					var data = {
 						labels: cityNames,
 						datasets: [{
@@ -526,7 +523,7 @@ function drawBarChart(chartDivId){
 				
 					window.barChart = new Chart(ctx).Bar(data, {
 						responsive: true // change to "false" and it will work
-					});
+					});		
 				   
 	
 	drawMapViz(locationArray[0][0]);
@@ -645,6 +642,102 @@ function getRandomColor() {
     return color;
 }
 
+
+function updateMapMarkers(e){
+	//console.log("Clicking the bar chart");
+	//console.log("Segments : " + barChart.getBarsAtEvent(e)[0].label);
+	var cityNAME = barChart.getBarsAtEvent(e)[0].label;
+	drawMapViz(cityNAME);
+}
+
+
+function getLocationForCity(cityName){
+	var locations = [];
+	if(locationArray == null || locationArray.length == 0){
+		return locations;
+	}
+	
+	for(var i = 0 ; i < locationArray.length; i++){
+		tempArray = locationArray[i];
+		if(tempArray[0] == cityName){
+			//console.log("Temp Array :" + tempArray);
+			locations.push(tempArray);
+		}
+	}
+	
+	return locations;
+}
+
+
+
+function showMapOverlay(){
+ 
+	var cityNames = [];
+	var cityCount = [];
+
+	var cityOverlayMap = [];
+	for (var i in cityMap){
+		//console.log("City in city map :" + i + " Count :" + cityMap[i]);
+		var cityName = i ;
+		var latLongArray = getLatLongForCity(i);
+		console.log("Lat long obj: " + latLongArray[0] + " " + latLongArray[1] );
+		var tempArray = new Array();
+		tempArray.push(latLongArray);
+		tempArray.push(cityMap[i]);
+		
+		cityOverlayMap[cityName] = tempArray;
+	}
+	
+
+
+	/*for (var city in cityOverlayMap) {
+		  console.log("City  :" + city);
+		  console.log("Center latlong :" + cityOverlayMap[city][0][0] + "," + cityOverlayMap[city][0][1] );
+		  console.log("COunt: "+cityOverlayMap[city][1]);
+	}*/
+ 
+	   var map = new google.maps.Map(document.getElementById('map_overlay'), {
+          zoom: 4,
+          center: {lat: 37.090, lng: -95.712},
+          mapTypeId: google.maps.MapTypeId.TERRAIN
+        });
+	
+		//console.log("Map obj: " + map);
+        // Construct the circle for each value in citymap.
+        // Note: We scale the area of the circle based on the population.
+		var i = 0;
+        for (var city in cityOverlayMap) {
+          // Add the circle for this city to the map.
+          var cityCircle = new google.maps.Circle({
+            strokeColor: '#3385ff',
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: '#3385ff',
+            fillOpacity: 0.35,
+            map: map,
+            center: new google.maps.LatLng(cityOverlayMap[city][0][0], cityOverlayMap[city][0][1]),
+            radius: Math.sqrt(cityOverlayMap[city][1]) * 100000,
+			id: i,
+			html: city+" region"
+			
+          });
+		  
+		  
+		  google.maps.event.addListener(cityCircle, 'click', function(){
+			  var infowindow = new google.maps.InfoWindow({
+				id: this.id,
+				content:this.html,
+				position: this.getCenter()
+			  });
+		 
+			  infowindow.open(map);
+			});
+	
+	
+		  i++;
+        }
+	  
+}
 var map;
 var markers = [];
 
@@ -686,78 +779,17 @@ function drawMapViz(cityName){
   }
 }
 
-function updateMapMarkers(e){
-	//console.log("Clicking the bar chart");
-	//console.log("Segments : " + barChart.getBarsAtEvent(e)[0].label);
-	var cityNAME = barChart.getBarsAtEvent(e)[0].label;
-	drawMapViz(cityNAME);
-}
 
-
-function getLocationForCity(cityName){
-	var locations = [];
-	if(locationArray == null || locationArray.length == 0){
-		return locations;
-	}
+function getLatLongForCity(cityName){
 	
+	var latlong = [];
 	for(var i = 0 ; i < locationArray.length; i++){
 		tempArray = locationArray[i];
 		if(tempArray[0] == cityName){
-			//console.log("Temp Array :" + tempArray);
-			locations.push(tempArray);
+			latlong.push(tempArray[3]);
+			latlong.push(tempArray[4]);
+			return latlong;
 		}
 	}
-	
-	return locations;
-}
-
-
-function showMapOverlay(){
- 
- console.log("Preparing map visualizations");
- 
- var citymap = {
-        chicago: {
-          center: {lat: 41.878, lng: -87.629},
-          population: 2714856
-        },
-        newyork: {
-          center: {lat: 40.714, lng: -74.005},
-          population: 8405837
-        },
-        losangeles: {
-          center: {lat: 34.052, lng: -118.243},
-          population: 3857799
-        },
-        vancouver: {
-          center: {lat: 49.25, lng: -123.1},
-          population: 603502
-        }
-      };
-
-	   var map = new google.maps.Map(document.getElementById('map_overlay'), {
-          zoom: 3,
-          center: {lat: 37.090, lng: -95.712},
-          mapTypeId: google.maps.MapTypeId.TERRAIN
-        });
-	
-		console.log("Map obj: " + map);
-        // Construct the circle for each value in citymap.
-        // Note: We scale the area of the circle based on the population.
-        for (var city in citymap) {
-          // Add the circle for this city to the map.
-          var cityCircle = new google.maps.Circle({
-            strokeColor: '#FF0000',
-            strokeOpacity: 0.8,
-            strokeWeight: 2,
-            fillColor: '#FF0000',
-            fillOpacity: 0.35,
-            map: map,
-            center: citymap[city].center,
-            radius: Math.sqrt(citymap[city].population) * 100
-          });
-		  
-		  console.log("City circle: " + cityCircle);
-        }
-	  
+	return latlong;
 }

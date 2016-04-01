@@ -6,8 +6,8 @@
 	<link rel="stylesheet" href="css/jquery.mobile142.css" />
 	<link rel="stylesheet" href="css/map.css" />
 	<script src="js/jquery191.js"></script>
-	<script type="text/javascript" src="js/google_maps.js"></script>
-	<!--<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCyq28yaQFLLi9tGHaNGMsaA9WQy7yzbVE"></script>-->
+	<!--<script type="text/javascript" src="js/google_maps.js"></script>-->
+	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCyq28yaQFLLi9tGHaNGMsaA9WQy7yzbVE"></script>
 	<script type="text/javascript" src="js/Chart.js"></script>
 	
 	<script>
@@ -57,17 +57,12 @@
 			$('#eventMap').hide();
 	});
 	
-	$(document).on( "pagebeforeshow", "#cityTrendChartPage", function() {
-		getCityDataCount();
-	});
-	
 	$(document).on( "pageshow", "#cityTrendChartPage", function() {
 			
 			drawBarChart("cityTrendChart");
 	});
 	  
 	$(document).on( "pagebeforeshow", "#emergencyTrendChartPage", function() {
-		getCityDataCount();
 		getEmergencyMap();
 	});
 	
@@ -83,6 +78,9 @@
 		updateMapMarkers(e);
 	});
 	
+	$(document).on( "pagebeforeshow", "#page2", function() {
+		getCityDataCount();
+	});
 	
 	$(document).on( "pageshow", "#map_viz_page", function() {
 			console.log("Clicking on map viz page");
@@ -157,7 +155,7 @@
 			<a href="#popupInfodiv" id="notify_btn"  data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all ui-icon-check ui-btn-icon-left" onclick="return addNewsIntoDB();">Notify</a>
 			<div id ="popupInfodiv" data-role="popup" class="ui-content" style="min-width:250px;"> 
 					<h5>Thanks for your information. Concerned authorities will verify and take immediate action.</h5>
-					<a href="#map-page" id="cancel_btn" class="ui-btn ui-btn-inline ui-corner-all ui-icon-check ui-btn-icon-left" >Close</a> <!-- TODO send text msg or email -->
+					<a href="#page1" id="cancel_btn" class="ui-btn ui-btn-inline ui-corner-all ui-icon-check ui-btn-icon-left" >Close</a> <!-- TODO send text msg or email -->
 			</div>
 				
 		</div>
@@ -320,7 +318,7 @@
 		</div>
 		<div data-role="main" class="ui-content">
 				<a href="#page2" data-transition="slide" data-role="button" data-inline="true">Back</a> <!-- TODO make it smaller -->
-				<h2 align="center">Map Visualizations</h2>
+				<h2 align="center">Map Visualization</h2>
 				
 				<div id="map_overlay"></div>
 				
