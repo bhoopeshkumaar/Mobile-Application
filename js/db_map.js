@@ -126,7 +126,7 @@ function createTables() {
     DEMODB.transaction(
         function(transaction) {
             transaction.executeSql('CREATE TABLE IF NOT EXISTS user(id INTEGER NOT NULL PRIMARY KEY, user_name TEXT NOT NULL);', [], nullDataHandler, errorHandler);
-            transaction.executeSql('CREATE TABLE IF NOT EXISTS news(news_id INTEGER NOT NULL PRIMARY KEY, city INTEGER NOT NULL, emergencyType TEXT NOT NULL, description TEXT NOT NULL, latitude TEXT, longitude TEXT, insertTime DATETIME, address TEXT);', [], nullDataHandler, errorHandler);
+            transaction.executeSql('CREATE TABLE IF NOT EXISTS news(news_id INTEGER NOT NULL PRIMARY KEY, city INTEGER NOT NULL, emergencyType TEXT NOT NULL, description TEXT NOT NULL, latitude TEXT, longitude TEXT, insertTime DATETIME, address TEXT, isResolved TEXT);', [], nullDataHandler, errorHandler);
         }
     );
 
@@ -168,11 +168,11 @@ function getUserLocation() {
                     if (ac.types.indexOf("street_address") >= 0) street = ac.long_name;
                 }
 
-                console.log("Setting user location...");
+                console.log("Setting user location... city: " + city);
 				userCity = city;
 				
 					//console.log("Inside get User location: User loc is " + userCity);
-					//$("#set").append("<h4>No new emergencies reported at " + userCity + ". You can be safe.</h4>");
+				//$("#set").append("<h4>No new emergencies reported at " + userCity + ". You can be safe.</h4>");
                 
                 //only report if we got Good Stuff
 
@@ -216,22 +216,36 @@ function populateNews() {
         function(transaction) {
 
             var data = [
-                ['1', 'Hyattsville', 'Theft', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '38.9528572', '-76.95194594'],
-                ['2', 'Hyattsville', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '38.953241', '-76.94656007'],
-                ['3', 'Hyattsville', 'Medical', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '38.95831359', '-76.94364182'],
-                ['4', 'Hyattsville', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '38.9606829', '-76.95467107'],
-                ['5', 'Dallas', 'Theft', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '32.78052496', '-96.79033602'],
-                ['6', 'Dallas', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '32.78290628', '-96.80136527'],
-                ['7', 'Dallas', 'Medical', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '32.78586481', '-96.78739632'],
-                ['8', 'Dallas', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '32.78713021', '-96.80155635'],
-                ['9', 'Chennai', 'Theft', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '13.0828056', '80.27498848'],
-                ['10', 'Frederick', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '39.41292138', '-77.40676045'],
-                ['11', 'Frederick', 'Medical', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '39.41806037', '-77.40637422'],
-                ['12', 'Frederick', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '39.4218895', '-77.42781043'],
+                ['1', 'Hyattsville', 'Theft', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '38.9528572', '-76.95194594', 'Fri 4 Dec 2015 12:15:00', '', 'yes'],
+                ['2', 'Hyattsville', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '38.953241', '-76.94656007','Thu 17 Dec 2015 02:30:00', '', 'yes'],
+                ['3', 'Hyattsville', 'Medical', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '38.95831359', '-76.94364182', 'Fri 15 Jan 2016 09:45:00', '', 'yes'],
+                ['4', 'Hyattsville', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '38.9606829', '-76.95467107', 'Mon 1 Feb 2016 10:20:00', '', 'yes'],
+                ['5', 'Dallas', 'Theft', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '32.78052496', '-96.79033602', 'Mon 8 Feb 2016 12:40:00', '', 'yes'],
+                ['6', 'Dallas', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '32.78290628', '-96.80136527', 'Tue 9 Feb 2016 01:55:00', '', 'yes'],
+                ['7', 'Dallas', 'Medical', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '32.78586481', '-96.78739632', 'Mon 15 Feb 2016 03:40:00', '', 'yes'],
+                ['8', 'Dallas', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '32.78713021', '-96.80155635', 'Wed 17 Feb 2016 03:50:00', '', 'yes'],
+                ['9', 'Chennai', 'Theft', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '13.0828056', '80.27498848', 'Sat 20 Feb 2016 06:40:00', '', 'yes'],
+                ['10', 'Frederick', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '39.41292138', '-77.40676045', 'Sun 21 Feb 2016 07:10:00', '', 'yes'],
+                ['11', 'Frederick', 'Medical', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '39.41806037', '-77.40637422', 'Wed 24 Feb 2016 10:20:00', '', 'yes'],
+                ['12', 'Frederick', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '39.4218895', '-77.42781043', 'Fri 25 Mar 2016 11:40:00', '', 'yes'],
+				['13','New Britain','Fire','Huge fire breakout 3 people stuck','41.665158','-72.762913','Tue 15 Sep 2015 05:25:00','752 Durham Road  New Britain, CT 06051', 'yes'],
+				['14','Lawndale','Medical','Pregnant women needs attention','38.434855','-122.596905','Sat 26 Sep 2015 06:30:00','313 Deerfield Drive, Lawndale, CA 90260', 'yes'],
+				['15','Oklahoma City','Theft','tall male white blazers blue jean','35.51859','-97.59673','Sat 24 Oct 2015 10:20:00','170 Warren Avenue Oklahoma City, OK 73112', 'yes'],
+				['16','Oakland','Other','Suspect activity near my area','37.798141','-122.258','Sun 22 Nov 2015 10:25:00','566 1st Avenue Oakland, CA 94603', 'yes'],
+				['17','Mount Holly','Fire','Huge fire breakout 3 people stuck','39.989586','-74.797957','Wed 2 Dec 2015 11:40:00','108 Willow Lane Mount Holly, NJ 08060', 'yes'],
+				['18','Munster','Medical','Accident near i-95 - need ambulance','41.539546','-87.491987','Mon 14 Dec 2015 13:10:00','753 Cardinal Drive Munster, IN 46321', 'yes'],
+				['19','West Palm Beach','Theft','tall male white blazers blue jean','26.555954','-80.095162','Fri 25 Dec 2015 14:35:00','758 Buttonwood Drive West Palm Beach, FL 33404', 'yes'],
+				['20','Saint Paul','Other','Suspect activity near my area','45.003537','-93.118923','Fri 1 Jan 2016 14:40:00','204 Crescent Street Saint Paul, MN 55104', 'yes'],
+				['21','Piqua','Fire','Huge fire breakout 3 people stuck','39.860482','-83.936762','Thu 28 Jan 2016 15:20:00','973 Willow Avenue Piqua, OH 45356', 'yes'],
+				['22','San Jose','Medical','Accident near i-75 - need ambulance','37.378625','-121.826399','Thu 25 Feb 2016 17:40:00','847 Summit Street San Jose, CA 95127', 'yes'],
+				['23','Wake Forest','Theft','tall male white blazers blue jean','35.885278','-78.650882','Fri 26 Feb 2016 19:10:00','980 Penn Street Wake Forest, NC 27587', 'yes'],
+				['24','Dickson','Other','sand storm approaching','36.077005','-87.38779','Thu 10 Mar 2016 19:15:00','164 Buckingham Drive Dickson, TN 37055', 'yes'],
+				['25','Sarasota','Medical','Fatal accident near my location','27.292308','-82.496739','Sun 13 Mar 2016 20:20:00','20 Deerfield Drive Sarasota, FL 34231', 'yes']
+
             ];
 
-            for (var i = 0; i < 12; i++) {
-                transaction.executeSql("INSERT INTO news(news_id, city, emergencyType, description,  latitude, longitude, insertTime, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [data[i][0], data[i][1], data[i][2], data[i][3], data[i][4], data[i][5], new Date(), 'test'], errorHandler);
+            for (var i = 0; i < 25; i++) {
+                transaction.executeSql("INSERT INTO news(news_id, city, emergencyType, description,  latitude, longitude, insertTime, address, isResolved) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [data[i][0], data[i][1], data[i][2], data[i][3], data[i][4], data[i][5], data[i][6]+' GMT-0400 (Eastern Daylight Time)', data[i][7], data[i][8]], errorHandler);
             }
         }
     );
@@ -248,9 +262,9 @@ function insertNews() {
         function(transaction) {
             //console.log('Lattt: ' + eventLat + 'Longi: ' + eventLong);
             if (eventLat == '' && eventLong == '') {
-                transaction.executeSql("INSERT INTO news(city, emergencyType, description, insertTime, address) VALUES (?, ?, ?, ?, ?)", [userCity, emergencyType, description, dateTime, userAddress], errorHandler);
+                transaction.executeSql("INSERT INTO news(city, emergencyType, description, insertTime, address,isResolved) VALUES (?, ?, ?, ?, ?, ?)", [userCity, emergencyType, description, dateTime, userAddress, 'no'], errorHandler);
             } else {
-                transaction.executeSql("INSERT INTO news(city, emergencyType, description, latitude, longitude, insertTime, address) VALUES (?, ?, ?, ?, ?, ?, ?)", [userCity, emergencyType, description, eventLat, eventLong, dateTime, userAddress], errorHandler);
+                transaction.executeSql("INSERT INTO news(city, emergencyType, description, latitude, longitude, insertTime, address, isResolved) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [userCity, emergencyType, description, eventLat, eventLong, dateTime, userAddress, 'no'], errorHandler);
             }
 
         }
@@ -270,10 +284,9 @@ function selectUser() {
 
 function selectNews() {
 
-
     DEMODB.transaction(
         function(transaction) {
-            transaction.executeSql("SELECT * FROM news where city = ? order by news_id desc;", [userCity], dataNewsSelectHandler, errorHandler);
+            transaction.executeSql("SELECT * FROM news where city = ? and isResolved='no' order by news_id desc;", [userCity], dataNewsSelectHandler, errorHandler);
         }
     );
 
@@ -306,11 +319,19 @@ function dataNewsSelectHandler(transaction, results) {
         row;
     var newsContent = '';
     //console.log('Num of rows: ' + results.rows.length);	
-
+	
     $("#set").empty();
-
-      if (results.rows.length == 0) {
-		$("#set").append("<h4>No new emergencies reported at " + userCity + ". You can be safe.</h4>");
+	
+	 
+	 
+	 console.log('User city: ' + userCity);
+	 
+     if (results.rows.length == 0) {
+		var loc = userCity;
+		if(userCity == ''){
+			loc = ' your location'
+		}
+		$("#set").append("<h4>No new emergencies reported at " + loc + ". You can be safe.</h4>");
 	  }
 	  else{
 	  
@@ -376,9 +397,10 @@ function addNewsIntoDB() {
     });
 
     setTimeout(insertNews(), 4000);
-
+	sendEmail();
     return true;
 }
+
 
 
 function getLatLongForLocation(address) {
@@ -502,6 +524,9 @@ function dataCityCountSelectHandler(transaction, results) {
 
     //console.log("Location Array Length : " + locationArray.length); 	
 }
+
+
+
 
 function drawBarChart(chartDivId) {
 
@@ -781,6 +806,7 @@ var map;
 var markers = [];
 
 function drawMapViz(cityName) {
+	$('#map_info').html("<h5><font color='#800000'>Showing incidents at " + cityName + " region</font><h5>");
     var locations = getLocationForCity(cityName);
     map = new google.maps.Map(document.getElementById('map_markers'), {
         zoom: 12,
@@ -834,4 +860,107 @@ function getLatLongForCity(cityName) {
         }
     }
     return latlong;
+}
+
+
+function sendEmail() {
+	console.log("Sending email...");
+    $.ajax({
+      type: 'POST',
+      url: 'https://mandrillapp.com/api/1.0/messages/send.json',
+      data: {
+        'key': 'Qq4UDLUmpIaIzLBz_PKYug',
+        'message': {
+          'from_email': 'bhoopeshkumaar@gmail.com',
+          'to': [
+              {
+                'email': 'v.bhoopeshkumaar@gmail.com',
+                'name': 'Bhoopesh',
+                'type': 'to'
+              }
+            ],
+          'autotext': 'true',
+          'subject': 'YOUR SUBJECT HERE!', //subject
+          'html': 'YOUR EMAIL CONTENT HERE! YOU CAN USE HTML!' // content
+        }
+      }
+     }).done(function(response) {
+       console.log(response); // if you're into that sorta thing
+     });
+	 console.log("Email sent...");
+}
+
+function getUnresolvedData(){
+	
+	console.log("Unresolved data..");
+	
+	 DEMODB.transaction(
+        function(transaction) {
+            transaction.executeSql("SELECT * FROM news where isResolved='no' order by news_id;", [], dataNewsUnresolvedHandler, errorHandler);
+        }
+    );
+
+}
+
+
+
+
+function dataNewsUnresolvedHandler(transaction, results) {
+
+    var i = 0,
+        row;
+		
+		
+		console.log("results.rows.length::" + results.rows.length);
+		
+		if(results.rows.length == 0){
+			$('#unresolved').html("<h5>There are no unresolved incidents yet. All are resolved.</h5>");
+		}
+		else{
+			
+		var htmlStr = "<table class='cityTables ui-responsive table-stroke' data-role='table' data-mode='reflow'>"
+		htmlStr+= '<tr><th></th><th>City</th><th>Type</th><th>Description</th><th>Address</th><th>Updated</th></tr>'
+        for (i; i < results.rows.length; i++) {
+            row = results.rows.item(i);
+			
+			var newsId = row['news_id'];
+			var city = row['city'];
+			var type = row['emergencyType']
+			var description = row['description'];
+			var address = row['address'];
+			var time = row['insertTime']
+			if (time != null && time != '') {
+                time = time.split("GMT")[0].trim();
+            }
+			
+			
+			
+			
+			
+			htmlStr += '<tr>'
+			htmlStr += "<td><a href='#popupDiv' data-rel='popup' class='ui-btn ui-btn-inline ui-corner-all ui-icon-check ui-btn-icon-left' onclick='return updateResolved("+newsId+");'>Resolve</a></td>";
+			htmlStr += '<td>'+ city + '</td>';
+			htmlStr += '<td>'+ type + '</td>';
+			htmlStr += '<td>'+ description + '</td>';
+			htmlStr += '<td>'+ address + '</td>';
+			htmlStr += '<td>'+ time + '</td>';
+			htmlStr+= '</tr>'
+			
+			
+           }
+   
+		htmlStr += '</table>';
+		$('#unresolved').html(htmlStr);
+	}
+}
+
+function updateResolved(newsId){
+	console.log("Updating resolved .. " + newsId);
+	
+	DEMODB.transaction(
+        function(transaction) {
+                transaction.executeSql("update news set isResolved='yes' where news_id = ?", [newsId], errorHandler);
+        }
+    );
+	
 }
