@@ -75,7 +75,7 @@ function initDatabase() {
             var displayName = 'Database for Vigil Mobile application';
             var maxSize = 100000; //  bytes
             DEMODB = openDatabase(shortName, version, displayName, maxSize);
-            dropTables();
+            //dropTables();
             createTables();
 
         }
