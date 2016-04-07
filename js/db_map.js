@@ -75,7 +75,7 @@ function initDatabase() {
             var displayName = 'Database for Vigil Mobile application';
             var maxSize = 100000; //  bytes
             DEMODB = openDatabase(shortName, version, displayName, maxSize);
-            //dropTables();
+            dropTables();
             createTables();
 
         }
@@ -126,7 +126,7 @@ function createTables() {
     DEMODB.transaction(
         function(transaction) {
             transaction.executeSql('CREATE TABLE IF NOT EXISTS user(id INTEGER NOT NULL PRIMARY KEY, user_name TEXT NOT NULL);', [], nullDataHandler, errorHandler);
-            transaction.executeSql('CREATE TABLE IF NOT EXISTS news(news_id INTEGER NOT NULL PRIMARY KEY, city INTEGER NOT NULL, emergencyType TEXT NOT NULL, description TEXT NOT NULL, latitude TEXT, longitude TEXT, insertTime DATETIME, address TEXT, isResolved TEXT);', [], nullDataHandler, errorHandler);
+            transaction.executeSql('CREATE TABLE IF NOT EXISTS news(news_id INTEGER NOT NULL PRIMARY KEY, city INTEGER NOT NULL, emergencyType TEXT NOT NULL, description TEXT NOT NULL, latitude TEXT, longitude TEXT, insertTime DATETIME, address TEXT, isResolved TEXT, numVerified INTEGER);', [], nullDataHandler, errorHandler);
         }
     );
 
@@ -174,7 +174,7 @@ function getUserLocation() {
 					//console.log("Inside get User location: User loc is " + userCity);
 				//$("#set").append("<h4>No new emergencies reported at " + userCity + ". You can be safe.</h4>");
                 
-                //only report if we got Good Stuff
+                
 
                 if (address == null && address == '') {
                     if (street != '' && city != '' && state != '' && country != '') {
@@ -216,36 +216,36 @@ function populateNews() {
         function(transaction) {
 
             var data = [
-                ['1', 'Hyattsville', 'Theft', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '38.9528572', '-76.95194594', 'Fri 4 Dec 2015 12:15:00', '', 'yes'],
-                ['2', 'Hyattsville', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '38.953241', '-76.94656007','Thu 17 Dec 2015 02:30:00', '', 'yes'],
-                ['3', 'Hyattsville', 'Medical', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '38.95831359', '-76.94364182', 'Fri 15 Jan 2016 09:45:00', '', 'yes'],
-                ['4', 'Hyattsville', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '38.9606829', '-76.95467107', 'Mon 1 Feb 2016 10:20:00', '', 'yes'],
-                ['5', 'Dallas', 'Theft', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '32.78052496', '-96.79033602', 'Mon 8 Feb 2016 12:40:00', '', 'yes'],
-                ['6', 'Dallas', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '32.78290628', '-96.80136527', 'Tue 9 Feb 2016 01:55:00', '', 'yes'],
-                ['7', 'Dallas', 'Medical', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '32.78586481', '-96.78739632', 'Mon 15 Feb 2016 03:40:00', '', 'yes'],
-                ['8', 'Dallas', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '32.78713021', '-96.80155635', 'Wed 17 Feb 2016 03:50:00', '', 'yes'],
-                ['9', 'Chennai', 'Theft', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '13.0828056', '80.27498848', 'Sat 20 Feb 2016 06:40:00', '', 'yes'],
-                ['10', 'Frederick', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '39.41292138', '-77.40676045', 'Sun 21 Feb 2016 07:10:00', '', 'yes'],
-                ['11', 'Frederick', 'Medical', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '39.41806037', '-77.40637422', 'Wed 24 Feb 2016 10:20:00', '', 'yes'],
-                ['12', 'Frederick', 'Fire', 'Some text some text Some text some text Some text some text Some text some text Some text some text', '39.4218895', '-77.42781043', 'Fri 25 Mar 2016 11:40:00', '', 'yes'],
-				['13','New Britain','Fire','Huge fire breakout 3 people stuck','41.665158','-72.762913','Tue 15 Sep 2015 05:25:00','752 Durham Road  New Britain, CT 06051', 'yes'],
-				['14','Lawndale','Medical','Pregnant women needs attention','38.434855','-122.596905','Sat 26 Sep 2015 06:30:00','313 Deerfield Drive, Lawndale, CA 90260', 'yes'],
-				['15','Oklahoma City','Theft','tall male white blazers blue jean','35.51859','-97.59673','Sat 24 Oct 2015 10:20:00','170 Warren Avenue Oklahoma City, OK 73112', 'yes'],
-				['16','Oakland','Other','Suspect activity near my area','37.798141','-122.258','Sun 22 Nov 2015 10:25:00','566 1st Avenue Oakland, CA 94603', 'yes'],
-				['17','Mount Holly','Fire','Huge fire breakout 3 people stuck','39.989586','-74.797957','Wed 2 Dec 2015 11:40:00','108 Willow Lane Mount Holly, NJ 08060', 'yes'],
-				['18','Munster','Medical','Accident near i-95 - need ambulance','41.539546','-87.491987','Mon 14 Dec 2015 13:10:00','753 Cardinal Drive Munster, IN 46321', 'yes'],
-				['19','West Palm Beach','Theft','tall male white blazers blue jean','26.555954','-80.095162','Fri 25 Dec 2015 14:35:00','758 Buttonwood Drive West Palm Beach, FL 33404', 'yes'],
-				['20','Saint Paul','Other','Suspect activity near my area','45.003537','-93.118923','Fri 1 Jan 2016 14:40:00','204 Crescent Street Saint Paul, MN 55104', 'yes'],
-				['21','Piqua','Fire','Huge fire breakout 3 people stuck','39.860482','-83.936762','Thu 28 Jan 2016 15:20:00','973 Willow Avenue Piqua, OH 45356', 'yes'],
-				['22','San Jose','Medical','Accident near i-75 - need ambulance','37.378625','-121.826399','Thu 25 Feb 2016 17:40:00','847 Summit Street San Jose, CA 95127', 'yes'],
-				['23','Wake Forest','Theft','tall male white blazers blue jean','35.885278','-78.650882','Fri 26 Feb 2016 19:10:00','980 Penn Street Wake Forest, NC 27587', 'yes'],
-				['24','Dickson','Other','sand storm approaching','36.077005','-87.38779','Thu 10 Mar 2016 19:15:00','164 Buckingham Drive Dickson, TN 37055', 'yes'],
-				['25','Sarasota','Medical','Fatal accident near my location','27.292308','-82.496739','Sun 13 Mar 2016 20:20:00','20 Deerfield Drive Sarasota, FL 34231', 'yes']
+                ['1', 'Hyattsville', 'Theft', 'Two male UMD students reported that property was taken from the residence', '38.9528572', '-76.95194594', 'Fri 4 Dec 2015 12:15:00', '', 'no', '56'],
+                ['2', 'Hyattsville', 'Fire', 'Major fire outbreak next to my Apartment. in my current location', '38.953241', '-76.94656007','Thu 17 Dec 2015 02:30:00', '', 'no', '45'],
+                ['3', 'Hyattsville', 'Medical', 'Women aged 65 need urgent help to commute to a nearby hospital. She is unconscious', '38.95831359', '-76.94364182', 'Fri 15 Jan 2016 09:45:00', '', 'no', '43'],
+                ['4', 'Hyattsville', 'Fire', 'Fire near my location. Need urgent help.', '38.9606829', '-76.95467107', 'Mon 1 Feb 2016 10:20:00', '', 'no', '33'],
+                ['5', 'Dallas', 'Theft', 'A unidentified male was seen mugging a student. The suspect was armed and roaming near McDonalds', '32.78052496', '-96.79033602', 'Mon 8 Feb 2016 12:40:00', '', 'yes', '11'],
+                ['6', 'Dallas', 'Fire', 'Fire leakage near my place. Ferris manor apartments is the location', '32.78290628', '-96.80136527', 'Tue 9 Feb 2016 01:55:00', '', 'yes', '13'],
+                ['7', 'Dallas', 'Medical', 'A male is unconscious lying at the exact location where Iam in. He seems like a student from UTD', '32.78586481', '-96.78739632', 'Mon 15 Feb 2016 03:40:00', '', 'yes', '12'],
+                ['8', 'Dallas', 'Fire', 'Fire at three storeyed building. No fire stations nearby', '32.78713021', '-96.80155635', 'Wed 17 Feb 2016 03:50:00', '', 'yes', '19'],
+                ['9', 'Chennai', 'Theft', 'I was mugged near the Marina beach. The suspect was having gun and took my purse and cellphone. He was 6 feet tall and was wearing a gold chain', '13.0828056', '80.27498848', 'Sat 20 Feb 2016 06:40:00', '', 'yes', '20'],
+                ['10', 'Frederick', 'Fire', 'My house is in fire. I am caught inside. I am at Courtlong Apartments, Apt no,3', '39.41292138', '-77.40676045', 'Sun 21 Feb 2016 07:10:00', '', 'yes', '16'],
+                ['11', 'Frederick', 'Medical', 'Need medical help for an aged man. We are at NewAge apartments Apt no3 and he had cardiac arrest', '39.41806037', '-77.40637422', 'Wed 24 Feb 2016 10:20:00', '', 'yes', '30'],
+                ['12', 'Frederick', 'Fire', 'Fire outbreak near my place', '39.4218895', '-77.42781043', 'Fri 25 Mar 2016 11:40:00', '', 'yes', '11'],
+				['13','New Britain','Fire','Huge fire breakout 3 people stuck','41.665158','-72.762913','Tue 15 Sep 2015 05:25:00','752 Durham Road  New Britain, CT 06051', 'yes', '19'],
+				['14','Lawndale','Medical','Pregnant women needs attention','38.434855','-122.596905','Sat 26 Sep 2015 06:30:00','313 Deerfield Drive, Lawndale, CA 90260', 'yes', '29'],
+				['15','Oklahoma City','Theft','tall male white blazers blue jean','35.51859','-97.59673','Sat 24 Oct 2015 10:20:00','170 Warren Avenue Oklahoma City, OK 73112', 'yes', '29'],
+				['16','Oakland','Other','Suspect activity near my area','37.798141','-122.258','Sun 22 Nov 2015 10:25:00','566 1st Avenue Oakland, CA 94603', 'yes', '14'],
+				['17','Mount Holly','Fire','Huge fire breakout 3 people stuck','39.989586','-74.797957','Wed 2 Dec 2015 11:40:00','108 Willow Lane Mount Holly, NJ 08060', 'yes', '0'],
+				['18','Munster','Medical','Accident near i-95 - need ambulance','41.539546','-87.491987','Mon 14 Dec 2015 13:10:00','753 Cardinal Drive Munster, IN 46321', 'yes', '7'],
+				['19','West Palm Beach','Theft','tall male white blazers blue jean','26.555954','-80.095162','Fri 25 Dec 2015 14:35:00','758 Buttonwood Drive West Palm Beach, FL 33404', 'yes', '6'],
+				['20','Saint Paul','Other','Suspect activity near my area','45.003537','-93.118923','Fri 1 Jan 2016 14:40:00','204 Crescent Street Saint Paul, MN 55104', 'yes', '5'],
+				['21','Piqua','Fire','Huge fire breakout 3 people stuck','39.860482','-83.936762','Thu 28 Jan 2016 15:20:00','973 Willow Avenue Piqua, OH 45356', 'yes', '9'],
+				['22','San Jose','Medical','Accident near i-75 - need ambulance','37.378625','-121.826399','Thu 25 Feb 2016 17:40:00','847 Summit Street San Jose, CA 95127', 'yes', '10'],
+				['23','Wake Forest','Theft','tall male white blazers blue jean','35.885278','-78.650882','Fri 26 Feb 2016 19:10:00','980 Penn Street Wake Forest, NC 27587', 'yes', '10'],
+				['24','Dickson','Other','sand storm approaching','36.077005','-87.38779','Thu 10 Mar 2016 19:15:00','164 Buckingham Drive Dickson, TN 37055', 'yes', '9'],
+				['25','Sarasota','Medical','Fatal accident near my location','27.292308','-82.496739','Sun 13 Mar 2016 20:20:00','20 Deerfield Drive Sarasota, FL 34231', 'yes', '6']
 
             ];
 
             for (var i = 0; i < 25; i++) {
-                transaction.executeSql("INSERT INTO news(news_id, city, emergencyType, description,  latitude, longitude, insertTime, address, isResolved) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [data[i][0], data[i][1], data[i][2], data[i][3], data[i][4], data[i][5], data[i][6]+' GMT-0400 (Eastern Daylight Time)', data[i][7], data[i][8]], errorHandler);
+                transaction.executeSql("INSERT INTO news(news_id, city, emergencyType, description,  latitude, longitude, insertTime, address, isResolved, numVerified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [data[i][0], data[i][1], data[i][2], data[i][3], data[i][4], data[i][5], data[i][6]+' GMT-0400 (Eastern Daylight Time)', data[i][7], data[i][8], data[i][9]], errorHandler);
             }
         }
     );
@@ -262,9 +262,9 @@ function insertNews() {
         function(transaction) {
             //console.log('Lattt: ' + eventLat + 'Longi: ' + eventLong);
             if (eventLat == '' && eventLong == '') {
-                transaction.executeSql("INSERT INTO news(city, emergencyType, description, insertTime, address,isResolved) VALUES (?, ?, ?, ?, ?, ?)", [userCity, emergencyType, description, dateTime, userAddress, 'no'], errorHandler);
+                transaction.executeSql("INSERT INTO news(city, emergencyType, description, insertTime, address,isResolved, numVerified) VALUES (?, ?, ?, ?, ?, ?, ?)", [userCity, emergencyType, description, dateTime, userAddress, 'no', 0], errorHandler);
             } else {
-                transaction.executeSql("INSERT INTO news(city, emergencyType, description, latitude, longitude, insertTime, address, isResolved) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [userCity, emergencyType, description, eventLat, eventLong, dateTime, userAddress, 'no'], errorHandler);
+                transaction.executeSql("INSERT INTO news(city, emergencyType, description, latitude, longitude, insertTime, address, isResolved, numVerified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [userCity, emergencyType, description, eventLat, eventLong, dateTime, userAddress, 'no', 0], errorHandler);
             }
 
         }
@@ -310,7 +310,10 @@ function dataUserSelectHandler(transaction, results) {
 
     }
 }
-
+function sleep(delay) {
+    var start = new Date().getTime();
+    while (new Date().getTime() < start + delay);
+  }
 function dataNewsSelectHandler(transaction, results) {
 
     //console.log("Inside dataNewsSelectHandler. city name:  " + userCity);
@@ -321,8 +324,12 @@ function dataNewsSelectHandler(transaction, results) {
     //console.log('Num of rows: ' + results.rows.length);	
 	
     $("#set").empty();
+		console.log("Sleeping for 3 secs");
 	
-	 
+	
+	setTimeout(function(){ 
+		
+    }, 2000);
 	 
 	 console.log('User city: ' + userCity);
 	 
@@ -466,19 +473,6 @@ function emergencyCountSelectHandler(transaction, results) {
         //console.log("City ::" + row['city'] + " Count : " + ctyMap[row['city']]);
         emergencyMap[row['emergencyType']] = ctyMap;
     }
-
-
-    //console.log("EMmergency Map:....... ");
-
-    /*for (var i in emergencyMap){
-    	//console.log("Emergency Type : " + i);
-    	//console.log("Emergency Map for each city: " + emergencyMap[i]);
-    	for(var j in emergencyMap[i]){
-    		//console.log("City : " + j);
-    		//console.log("Count: " + emergencyMap[i][j]);
-    	}
-    	console.log("----");
-    }*/
 }
 
 function getCityDataCount() {
