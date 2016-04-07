@@ -331,7 +331,7 @@ function dataNewsSelectHandler(transaction, results) {
 		if(userCity == ''){
 			loc = ' your location'
 		}
-		$("#set").append("<h4>No new emergencies reported at " + loc + ". You can be safe.</h4>");
+		$("#set").append("<h4>No new emergencies reported at " + loc + ".</h4>");
 	  }
 	  else{
 	  
@@ -773,10 +773,10 @@ function showMapOverlay() {
 
 
         var cityCircle = new google.maps.Circle({
-            strokeColor: '#3385ff',
+            strokeColor: '#ff0000',
             strokeOpacity: 0.8,
             strokeWeight: 2,
-            fillColor: '#3385ff',
+            fillColor: '#ff0000',
             fillOpacity: 0.35,
             map: map,
             center: new google.maps.LatLng(cityOverlayMap[city][0][0], cityOverlayMap[city][0][1]),
