@@ -358,9 +358,13 @@ function dataNewsSelectHandler(transaction, results) {
             var imageFile = row['emergencyType'].toLowerCase() + '.png';
 
 
-            newsContent = "<div id='" + divId + "' data-role='collapsible' data-collapsed='true' data-iconpos='right'><h4><img src='images/" + imageFile + "' alt='icon' width='20' height='20'/>" + '  ' + subDesc + " <img src='images/new.gif' alt='new'/></h4>" + '<b>Incident Type:</b> ' + row['emergencyType'] + "<p><b>Description:</b>" + row['description'] + "</p><div class= 'newsMapDiv' id='" + mapDivId + "'></div><p><b>News updated at:</b> " + time + "</p></div>";
-
-
+            newsContent = "<div id='" + divId + "' data-role='collapsible' data-collapsed='true' data-iconpos='right'><h4><img src='images/" + imageFile + "' alt='icon' width='20' height='20'/>" + '  ' + subDesc + " <img src='images/new.gif' alt='new'/></h4>" + '<b>Incident Type:</b> ' + row['emergencyType'] + "<p><b>Description:</b>" + row['description'] + "</p><div class= 'newsMapDiv' id='" + mapDivId + "'></div><p><b>News updated at:</b> " + time + "</p>";
+			
+			var newsid = row['news_id'];
+			var verifiedCount = row['numVerified'];
+			newsContent += "<div id='imgDiv"+newsid+"'><a href='#popupDivForVerify' onclick='return updateNumVerify("+newsid+","+verifiedCount+");'><img src='images/star_before.png' width='30' height='30'/></a>"+verifiedCount+"<h5>Click on the star to verify. </h5></div>"
+			
+			newsContent += "</div>";
 
             $("#set").append(newsContent).collapsibleset('refresh');
 
@@ -383,6 +387,20 @@ function dataNewsSelectHandler(transaction, results) {
 
 }
 
+function updateNumVerify(newsId, verifiedCount){
+	var verifiedCount = parseInt(verifiedCount) + 1;
+	DEMODB.transaction(
+        function(transaction) {
+				
+                transaction.executeSql("update news set numVerified=? where news_id = ?", [verifiedCount, newsId], errorHandler);
+        }
+    );
+	
+	$('#imgDiv'+newsId).html("<img src='images/star-after.png' width='30' height='30'/></a>"+verifiedCount);
+	
+	return true;
+
+}
 
 function addNewsIntoDB() {
 
