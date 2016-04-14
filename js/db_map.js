@@ -347,7 +347,7 @@ function dataNewsSelectHandler(transaction, results) {
             //console.log('Div id : '  + row['city']+row['news_id'] );
 
             var divId = row['city'] + row['news_id'];
-            var mapDivId = 'map' + row['news_id'];
+            var mapDivId = 'newsmap' + row['news_id'];
             var time = row['insertTime'];
             if (time != null && time != '') {
                 time = time.split("GMT")[0].trim();

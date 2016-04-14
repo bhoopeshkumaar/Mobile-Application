@@ -6,10 +6,11 @@
 				max-height:none;
 				overflow:hidden;
 				display:block; }
-.newsMapDiv { 
+				
+div[id^='newsmap']  { 
 				padding-top:30%;
 				padding-bottom:30%;
-				height:70%;
+				height:100%;
 				width:100%;
 				max-height:none;
 				overflow:hidden;
