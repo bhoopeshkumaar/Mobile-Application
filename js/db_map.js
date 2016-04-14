@@ -60,7 +60,7 @@ function drawMap(latlng, divId) {
 
     infowindow.open(map,marker);*/
 
-    //google.maps.event.trigger(map, 'resize');
+    google.maps.event.trigger(map, 'resize');
 }
 
 function initDatabase() {
